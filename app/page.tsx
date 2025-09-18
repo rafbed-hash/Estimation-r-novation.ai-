@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +13,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Home className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-foreground">RénoLuxe</span>
+            <span className="text-2xl font-bold text-foreground">Soumission Rénovation.AI</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">
@@ -50,17 +52,10 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6">
+              <div className="flex justify-center sm:justify-start">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-3xl px-16 py-10 h-auto w-full sm:w-auto" onClick={() => window.location.href = '/renovation'}>
                   Commencer Mon Projet
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary/5 text-lg px-8 py-6 bg-transparent"
-                >
-                  Voir Nos Réalisations
+                  <ArrowRight className="ml-4 h-8 w-8" />
                 </Button>
               </div>
 
@@ -270,21 +265,15 @@ export default function HomePage() {
             <p className="text-xl opacity-90 text-pretty leading-relaxed text-white">
               Obtenez votre soumission personnalisée en 60 secondes et commencez votre projet de rêve dès aujourd'hui.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Button
                 size="lg"
                 variant="secondary"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground text-lg px-8 py-6"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground text-3xl px-16 py-10 h-auto w-full max-w-md"
+                onClick={() => window.location.href = '/renovation'}
               >
-                Soumission Gratuite en 60s
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 bg-transparent"
-              >
-                Appeler Maintenant
+                Commencer Mon Projet
+                <ArrowRight className="ml-4 h-8 w-8" />
               </Button>
             </div>
           </div>
@@ -298,7 +287,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Home className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold">RénoLuxe</span>
+                <span className="text-xl font-bold">Soumission Rénovation.AI</span>
               </div>
               <p className="text-muted-foreground leading-relaxed">
                 Votre partenaire de confiance pour tous vos projets de rénovation haut de gamme.
@@ -351,14 +340,14 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Contact</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>01 23 45 67 89</li>
-                <li>contact@renoluxe.fr</li>
+                <li>contact@soumission-renovation.ai</li>
                 <li>Paris, France</li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 RénoLuxe. Tous droits réservés.</p>
+            <p>&copy; 2024 Soumission Rénovation.AI. Tous droits réservés.</p>
           </div>
         </div>
       </footer>
