@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleAIStudioService } from '@/lib/services/google-ai-studio'
 import { OpenAICostEstimationService } from '@/lib/services/openai-cost-estimation'
-import { BananaAIService } from '@/lib/services/banana-ai'
+import { OpenAIImageGenerationService } from '@/lib/services/openai-image-generation'
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,46 +22,74 @@ export async function POST(request: NextRequest) {
 
     // Initialisation des services
     const googleAIKey = process.env.GOOGLE_AI_STUDIO_API_KEY
-    const bananaAIKey = process.env.BANANA_API_KEY
     const openAIKey = process.env.OPENAI_API_KEY
 
-    if (!bananaAIKey || !openAIKey) {
-      console.log('❌ Missing API keys - Banana AI:', !!bananaAIKey, 'OpenAI:', !!openAIKey)
+    console.log('🔑 API Keys check:')
+    console.log('- Google AI Studio:', !!googleAIKey)
+    console.log('- OpenAI:', !!openAIKey)
+
+    if (!openAIKey) {
+      console.log('❌ Missing API keys - OpenAI:', !!openAIKey)
       return NextResponse.json(
-        { error: 'Clés API manquantes (Banana AI et OpenAI requis)' },
+        { 
+          error: 'Clé API OpenAI manquante',
+          details: {
+            openAI: !!openAIKey,
+            googleAI: !!googleAIKey
+          }
+        },
         { status: 500 }
       )
     }
 
     const googleAI = googleAIKey ? new GoogleAIStudioService(googleAIKey) : null
-    const bananaAI = new BananaAIService(bananaAIKey)
+    const dalleAI = new OpenAIImageGenerationService(openAIKey)
     const openAI = new OpenAICostEstimationService(openAIKey)
 
-    // Étape 1: Transformation d'images avec Banana AI
-    console.log('🍌 Calling Banana AI for image transformation...')
-    console.log('🔑 Banana AI Key available:', !!bananaAIKey)
+    // Étape 1: Transformation d'images avec DALL-E 3
+    console.log('🎨 Calling DALL-E 3 for image transformation...')
+    console.log('🔑 OpenAI Key available:', !!openAIKey)
     console.log('📸 Photos received:', body.project.photos?.length || 0)
     console.log('🎨 Selected style:', body.project.selectedStyle)
     console.log('🏠 Selected rooms:', body.project.selectedRooms)
     
     let aiResults
     try {
-      // Utiliser Banana AI pour transformer les images
-      const transformationResult = await bananaAI.transformPhotos({
-        originalPhotos: body.project.photos || [],
-        selectedStyle: body.project.selectedStyle,
+      // Utiliser DALL-E 3 pour générer des images transformées
+      const mainPhoto = body.project.photos?.[0]
+      
+      if (!mainPhoto) {
+        throw new Error('Aucune photo fournie pour la transformation')
+      }
+      
+      console.log('🎨 Generating transformed image with DALL-E 3...')
+      const transformationResult = await dalleAI.transformImage({
+        originalPhoto: mainPhoto,
         roomType: body.project.selectedRooms[0] || 'salle-de-bain',
+        selectedStyle: body.project.selectedStyle,
         customPrompt: body.project.customPrompt
       })
       
-      console.log('✅ Banana AI transformation completed')
+      console.log('✅ DALL-E 3 transformation completed')
       console.log('📊 Transformation confidence:', transformationResult.confidence)
-      console.log('🖼️ Transformed photos count:', transformationResult.transformedPhotos.length)
+      console.log('🖼️ Generated image URL:', transformationResult.transformedPhoto.substring(0, 50) + '...')
       
-      aiResults = transformationResult
+      aiResults = {
+        originalPhotos: [mainPhoto],
+        transformedPhotos: [{
+          id: '1',
+          url: transformationResult.transformedPhoto,
+          description: transformationResult.description,
+          confidence: transformationResult.confidence
+        }],
+        confidence: transformationResult.confidence,
+        processingTime: transformationResult.processingTime,
+        model: 'dall-e-3',
+        prompt: `Transformation ${body.project.selectedStyle} pour ${body.project.selectedRooms.join(', ')}`
+      }
       
     } catch (error) {
-      console.error('❌ Banana AI failed, trying Google Gemini fallback:', error)
+      console.error('❌ DALL-E 3 failed, trying Google Gemini fallback:', error)
       
       // Fallback avec Google Gemini si disponible
       if (googleAI) {
@@ -91,7 +119,7 @@ export async function POST(request: NextRequest) {
           console.log('✅ Google Gemini fallback completed')
         } catch (geminiError) {
           console.error('❌ Google Gemini fallback also failed:', geminiError)
-          throw error // Rethrow original Banana AI error
+          throw error // Rethrow original DALL-E error
         }
       } else {
         throw error
@@ -167,10 +195,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Erreur dans l\'API renovation/process:', error)
     console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
+    console.error('❌ Error type:', typeof error)
+    console.error('❌ Error constructor:', error?.constructor?.name)
+    
     return NextResponse.json(
       { 
         error: 'Erreur interne du serveur',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        type: typeof error,
+        stack: error instanceof Error ? error.stack : undefined
       },
       { status: 500 }
     )
