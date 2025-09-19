@@ -14,7 +14,9 @@ import {
   AlertCircle,
   Loader2,
   Send,
-  Palette
+  Palette,
+  TrendingDown,
+  DollarSign
 } from "lucide-react"
 
 interface ResultsDisplayProps {
@@ -523,17 +525,47 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
             <CardTitle className="flex items-center space-x-2">
               <Calculator className="h-5 w-5 text-primary" />
               <span>Estimation des coûts</span>
+              {data.potentialSavings && data.potentialSavings.percent > 0 && (
+                <Badge className="bg-green-100 text-green-800">
+                  Économies appliquées: -{data.potentialSavings.percent.toFixed(0)}%
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-bold text-primary">
-                {costEstimation.totalCost.average.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}
+            {/* Comparaison avec/sans optimisations */}
+            {data.potentialSavings && data.potentialSavings.percent > 0 ? (
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Coût original */}
+                <div className="text-center space-y-2 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="text-sm text-red-600 font-medium">Coût initial</div>
+                  <div className="text-2xl font-bold text-red-700 line-through">
+                    {data.budget?.toLocaleString('fr-FR')} €
+                  </div>
+                  <p className="text-xs text-red-600">Sans optimisations</p>
+                </div>
+                
+                {/* Coût optimisé */}
+                <div className="text-center space-y-2 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="text-sm text-green-600 font-medium">Coût optimisé</div>
+                  <div className="text-3xl font-bold text-green-700">
+                    {data.potentialSavings.newTotal.toLocaleString('fr-FR')} €
+                  </div>
+                  <p className="text-xs text-green-600">
+                    Économie: -{data.potentialSavings.amount.toLocaleString('fr-FR')} €
+                  </p>
+                </div>
               </div>
-              <p className="text-muted-foreground">
-                Fourchette: {costEstimation.totalCost.min.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })} - {costEstimation.totalCost.max.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}
-              </p>
-            </div>
+            ) : (
+              <div className="text-center space-y-2">
+                <div className="text-4xl font-bold text-primary">
+                  {costEstimation.totalCost.average.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}
+                </div>
+                <p className="text-muted-foreground">
+                  Fourchette: {costEstimation.totalCost.min.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })} - {costEstimation.totalCost.max.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}
+                </p>
+              </div>
+            )}
 
             <div className="space-y-4">
               <h4 className="font-semibold">Répartition des coûts</h4>
@@ -564,6 +596,98 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Optimisations appliquées */}
+      {data.optimizations && data.optimizations.length > 0 && (
+        <Card className="bg-green-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingDown className="h-5 w-5 text-green-600" />
+              <span>Optimisations appliquées</span>
+              <Badge className="bg-green-100 text-green-800">
+                -{data.potentialSavings?.percent.toFixed(0)}% d'économies
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3">
+              {data.optimizations.map((optId: string, index: number) => {
+                const optimizationLabels: Record<string, { title: string; description: string; savings: string }> = {
+                  'diy': {
+                    title: 'Travaux DIY',
+                    description: 'Réalisation de certains travaux par vous-même',
+                    savings: '30-50%'
+                  },
+                  'materials-alternatives': {
+                    title: 'Matériaux alternatifs',
+                    description: 'Utilisation de matériaux similaires mais moins coûteux',
+                    savings: '20-40%'
+                  },
+                  'phased-renovation': {
+                    title: 'Rénovation par phases',
+                    description: 'Étalement des travaux sur plusieurs périodes',
+                    savings: '15-25%'
+                  },
+                  'seasonal-timing': {
+                    title: 'Timing saisonnier',
+                    description: 'Planification en basse saison',
+                    savings: '10-20%'
+                  },
+                  'bulk-purchase': {
+                    title: 'Achats groupés',
+                    description: 'Négociation de prix de gros',
+                    savings: '15-30%'
+                  },
+                  'refurbished-appliances': {
+                    title: 'Électroménager reconditionné',
+                    description: 'Appareils reconditionnés ou d\'exposition',
+                    savings: '25-45%'
+                  }
+                }
+                
+                const opt = optimizationLabels[optId]
+                if (!opt) return null
+                
+                return (
+                  <div key={index} className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-green-200">
+                    <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h5 className="font-medium text-green-800">{opt.title}</h5>
+                        <Badge variant="outline" className="text-green-700 border-green-300">
+                          -{opt.savings}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-green-600">{opt.description}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            
+            {data.potentialSavings && (
+              <div className="mt-6 p-4 bg-green-100 rounded-lg border border-green-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-green-800">Total des économies</h4>
+                    <p className="text-sm text-green-600">
+                      Grâce aux optimisations sélectionnées
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-700">
+                      -{data.potentialSavings.amount.toLocaleString('fr-FR')} €
+                    </div>
+                    <div className="text-sm text-green-600">
+                      ({data.potentialSavings.percent.toFixed(0)}% d'économies)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -635,16 +759,47 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                 <h4 className="font-semibold flex items-center space-x-2">
                   <Calculator className="h-4 w-4 text-secondary" />
                   <span>Optimisation budget</span>
+                  {data.potentialSavings && data.potentialSavings.percent > 0 && (
+                    <Badge className="bg-green-100 text-green-800 text-xs">
+                      Économies actives
+                    </Badge>
+                  )}
                 </h4>
                 <div className="space-y-3">
-                  {costEstimation.totalCost.average > 25000 && (
-                    <div className="p-3 bg-white/50 rounded-lg border border-secondary/20">
-                      <p className="text-sm"><strong>💰 Échelonnement:</strong> Considérez une rénovation par phases pour étaler les coûts</p>
-                    </div>
+                  {data.potentialSavings && data.potentialSavings.percent > 0 ? (
+                    <>
+                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                        <p className="text-sm"><strong>✅ Optimisations appliquées:</strong> Vous économisez déjà {data.potentialSavings.amount.toLocaleString('fr-FR')} € grâce à vos choix intelligents !</p>
+                      </div>
+                      {data.optimizations?.includes('diy') && (
+                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm"><strong>🔨 Conseil DIY:</strong> Commencez par la peinture et les finitions. Gardez la plomberie/électricité pour les pros.</p>
+                        </div>
+                      )}
+                      {data.optimizations?.includes('phased-renovation') && (
+                        <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                          <p className="text-sm"><strong>📅 Rénovation par phases:</strong> Phase 1: Structure et gros œuvre. Phase 2: Finitions et décoration.</p>
+                        </div>
+                      )}
+                      {data.optimizations?.includes('materials-alternatives') && (
+                        <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                          <p className="text-sm"><strong>🏗️ Matériaux alternatifs:</strong> Stratifié haute qualité, carrelage grès cérame, peintures haut de gamme à prix réduit.</p>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {costEstimation.totalCost.average > 25000 && (
+                        <div className="p-3 bg-white/50 rounded-lg border border-secondary/20">
+                          <p className="text-sm"><strong>💰 Échelonnement:</strong> Considérez une rénovation par phases pour étaler les coûts</p>
+                        </div>
+                      )}
+                      <div className="p-3 bg-white/50 rounded-lg border border-secondary/20">
+                        <p className="text-sm"><strong>📅 Timing:</strong> Planifiez vos travaux hors hiver canadien (évitez décembre-mars)</p>
+                      </div>
+                    </>
                   )}
-                  <div className="p-3 bg-white/50 rounded-lg border border-secondary/20">
-                    <p className="text-sm"><strong>📅 Timing:</strong> Planifiez vos travaux hors hiver canadien (évitez décembre-mars)</p>
-                  </div>
+                  
                   <div className="p-3 bg-white/50 rounded-lg border border-secondary/20">
                     <p className="text-sm"><strong>🔍 Devis:</strong> Demandez 3-4 devis pour comparer les prix et prestations</p>
                   </div>
