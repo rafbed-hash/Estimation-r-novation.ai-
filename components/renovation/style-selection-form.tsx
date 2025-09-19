@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Palette, Sparkles, Upload, X } from "lucide-react"
+import { Palette, Sparkles, Upload, X, Loader2 } from "lucide-react"
+import type { InspirationPhoto } from '@/lib/services/unsplash'
 
 interface StyleSelectionFormProps {
   data: any
@@ -17,7 +18,44 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
   const [useCustomPhoto, setUseCustomPhoto] = useState(false)
   const [inspirationPhoto, setInspirationPhoto] = useState<File | null>(data.inspirationPhoto || null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [stylePhotos, setStylePhotos] = useState<Record<string, InspirationPhoto[]>>({})
+  const [loadingPhotos, setLoadingPhotos] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Charger les photos d'inspiration au montage du composant
+  useEffect(() => {
+    const loadInspirationPhotos = async () => {
+      if (!data.rooms || data.rooms.length === 0) return
+
+      setLoadingPhotos(true)
+      try {
+        const firstRoom = data.rooms[0]
+        console.log(`🖼️ Loading inspiration photos for ${firstRoom}`)
+
+        const response = await fetch('/api/inspiration/photos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ roomType: firstRoom })
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          setStylePhotos(result.stylePhotos)
+          console.log(`✅ Loaded inspiration photos for ${firstRoom}`)
+        } else {
+          console.error('❌ Failed to load inspiration photos')
+        }
+      } catch (error) {
+        console.error('❌ Error loading inspiration photos:', error)
+      } finally {
+        setLoadingPhotos(false)
+      }
+    }
+
+    loadInspirationPhotos()
+  }, [data.rooms])
 
   // Styles prédéfinis selon la pièce sélectionnée
   const getStylesForRoom = (room: string) => {
@@ -174,55 +212,110 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
         </div>
       )}
 
-      {/* Styles prédéfinis */}
+      {/* Styles prédéfinis avec photos d'inspiration */}
       <div className="space-y-6">
         <h4 className="text-lg font-semibold text-center">Styles recommandés pour votre {selectedRoom}</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {styles.map((style) => (
-            <Card
-              key={style.id}
-              className={`cursor-pointer transition-all hover:shadow-lg ${
-                selectedStyle === style.id && !useCustomPhoto
-                  ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => handleStyleSelect(style.id)}
-            >
-              <CardContent className="p-0">
-                <div className="relative">
-                  <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
-                    <div className="text-center space-y-2">
-                      <Palette className="h-12 w-12 text-muted-foreground mx-auto" />
-                      <p className="text-sm text-muted-foreground">Aperçu du style</p>
+        
+        {loadingPhotos ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Chargement des photos d'inspiration...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {styles.map((style) => {
+              const photos = stylePhotos[style.id] || []
+              const mainPhoto = photos[0]
+              
+              return (
+                <Card
+                  key={style.id}
+                  className={`cursor-pointer transition-all hover:shadow-lg ${
+                    selectedStyle === style.id && !useCustomPhoto
+                      ? 'border-primary bg-primary/5 shadow-md'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => handleStyleSelect(style.id)}
+                >
+                  <CardContent className="p-0">
+                    <div className="relative">
+                      {mainPhoto ? (
+                        <div className="aspect-video rounded-t-lg overflow-hidden">
+                          <img 
+                            src={mainPhoto.url} 
+                            alt={mainPhoto.alt}
+                            className="w-full h-full object-cover transition-transform hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors" />
+                        </div>
+                      ) : (
+                        <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
+                          <div className="text-center space-y-2">
+                            <Palette className="h-12 w-12 text-muted-foreground mx-auto" />
+                            <p className="text-sm text-muted-foreground">Style {style.name}</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {selectedStyle === style.id && !useCustomPhoto && (
+                        <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                          <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  {selectedStyle === style.id && !useCustomPhoto && (
-                    <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
+                    
+                    <div className="p-6">
+                      <h5 className={`text-xl font-semibold mb-2 ${
+                        selectedStyle === style.id && !useCustomPhoto ? 'text-primary' : 'text-foreground'
+                      }`}>
+                        {style.name}
+                      </h5>
+                      <p className="text-muted-foreground mb-4">{style.description}</p>
+                      
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {style.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      
+                      {/* Galerie de photos miniatures */}
+                      {photos.length > 1 && (
+                        <div className="flex gap-2 mt-3">
+                          {photos.slice(1, 4).map((photo, index) => (
+                            <div key={photo.id} className="w-12 h-12 rounded overflow-hidden">
+                              <img 
+                                src={photo.url} 
+                                alt={photo.alt}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                          ))}
+                          {photos.length > 4 && (
+                            <div className="w-12 h-12 rounded bg-muted flex items-center justify-center">
+                              <span className="text-xs text-muted-foreground">+{photos.length - 4}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {mainPhoto && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Photo par {mainPhoto.photographer}
+                        </p>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h5 className={`text-xl font-semibold mb-2 ${
-                    selectedStyle === style.id && !useCustomPhoto ? 'text-primary' : 'text-foreground'
-                  }`}>
-                    {style.name}
-                  </h5>
-                  <p className="text-muted-foreground mb-4">{style.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {style.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Option photo personnalisée */}
