@@ -60,7 +60,7 @@ export default function RenovationPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Home className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-foreground">Soumission Rénovation.AI</span>
+            <span className="text-2xl font-bold text-foreground">Estimation Rénovation.AI</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a href="/" className="text-muted-foreground hover:text-primary transition-colors">

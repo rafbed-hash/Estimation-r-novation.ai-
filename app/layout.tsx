@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Soumission Rénovation.AI - Rénovation avec Intelligence Artificielle',
+  title: 'Estimation Rénovation.AI - Rénovation avec Intelligence Artificielle',
   description: 'Transformez votre maison avec notre IA. Visualisations 3D, estimation automatique des coûts, et devis personnalisé en 60 secondes.',
-  generator: 'Soumission Rénovation.AI',
+  generator: 'Estimation Rénovation.AI',
 }
 
 export default function RootLayout({
