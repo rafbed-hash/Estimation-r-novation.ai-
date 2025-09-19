@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { UnsplashService } from '@/lib/services/unsplash'
+import { PexelsService } from '@/lib/services/pexels'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,21 +10,21 @@ export async function GET(request: NextRequest) {
 
     console.log(`🖼️ API /inspiration/photos called for ${style} ${roomType}`)
 
-    // Vérifier la clé API Unsplash
-    const unsplashKey = process.env.UNSPLASH_ACCESS_KEY
+    // Vérifier la clé API Pexels
+    const pexelsKey = process.env.PEXELS_API_KEY
 
-    if (!unsplashKey) {
-      console.log('❌ Missing Unsplash API key')
+    if (!pexelsKey) {
+      console.log('❌ Missing Pexels API key')
       return NextResponse.json(
-        { error: 'Clé API Unsplash manquante' },
+        { error: 'Clé API Pexels manquante' },
         { status: 500 }
       )
     }
 
-    const unsplash = new UnsplashService(unsplashKey)
+    const pexels = new PexelsService(pexelsKey)
 
     // Récupérer les photos d'inspiration
-    const photos = await unsplash.getInspirationPhotos(roomType, style, count)
+    const photos = await pexels.getInspirationPhotos(roomType, style, count)
 
     console.log(`✅ Retrieved ${photos.length} inspiration photos`)
 
@@ -56,19 +56,19 @@ export async function POST(request: NextRequest) {
 
     console.log(`🖼️ API /inspiration/photos POST called for all styles of ${roomType}`)
 
-    const unsplashKey = process.env.UNSPLASH_ACCESS_KEY
+    const pexelsKey = process.env.PEXELS_API_KEY
 
-    if (!unsplashKey) {
+    if (!pexelsKey) {
       return NextResponse.json(
-        { error: 'Clé API Unsplash manquante' },
+        { error: 'Clé API Pexels manquante' },
         { status: 500 }
       )
     }
 
-    const unsplash = new UnsplashService(unsplashKey)
+    const pexels = new PexelsService(pexelsKey)
 
     // Récupérer toutes les photos de styles pour cette pièce
-    const allStylePhotos = await unsplash.getAllStylePhotos(roomType)
+    const allStylePhotos = await pexels.getAllStylePhotos(roomType)
 
     console.log(`✅ Retrieved photos for all styles of ${roomType}`)
 

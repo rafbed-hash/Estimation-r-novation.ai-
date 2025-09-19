@@ -1,31 +1,39 @@
-// Service pour récupérer des photos d'inspiration depuis Unsplash
+// Service pour récupérer des photos d'inspiration depuis Pexels
 // Photos de haute qualité pour les styles de rénovation
 
-interface UnsplashConfig {
-  accessKey: string
+interface PexelsConfig {
+  apiKey: string
 }
 
-interface UnsplashPhoto {
-  id: string
-  urls: {
+interface PexelsPhoto {
+  id: number
+  width: number
+  height: number
+  url: string
+  photographer: string
+  photographer_url: string
+  photographer_id: number
+  avg_color: string
+  src: {
+    original: string
+    large2x: string
+    large: string
+    medium: string
     small: string
-    regular: string
-    full: string
+    portrait: string
+    landscape: string
+    tiny: string
   }
-  alt_description: string
-  user: {
-    name: string
-    username: string
-  }
-  links: {
-    html: string
-  }
+  liked: boolean
+  alt: string
 }
 
-interface UnsplashResponse {
-  results: UnsplashPhoto[]
-  total: number
-  total_pages: number
+interface PexelsResponse {
+  photos: PexelsPhoto[]
+  total_results: number
+  page: number
+  per_page: number
+  next_page?: string
 }
 
 interface InspirationPhoto {
@@ -34,15 +42,15 @@ interface InspirationPhoto {
   alt: string
   photographer: string
   photographerUrl: string
-  unsplashUrl: string
+  sourceUrl: string
 }
 
-class UnsplashService {
-  private config: UnsplashConfig
+class PexelsService {
+  private config: PexelsConfig
 
-  constructor(accessKey: string) {
+  constructor(apiKey: string) {
     this.config = {
-      accessKey
+      apiKey
     }
   }
 
@@ -55,34 +63,34 @@ class UnsplashService {
       const query = this.buildSearchQuery(roomType, style)
       
       const response = await fetch(
-        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${count}&orientation=landscape`,
+        `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${count}&orientation=landscape`,
         {
           headers: {
-            'Authorization': `Client-ID ${this.config.accessKey}`
+            'Authorization': this.config.apiKey
           }
         }
       )
 
       if (!response.ok) {
-        console.error('❌ Unsplash API Error:', response.status, response.statusText)
-        throw new Error(`Erreur API Unsplash: ${response.status}`)
+        console.error('❌ Pexels API Error:', response.status, response.statusText)
+        throw new Error(`Erreur API Pexels: ${response.status}`)
       }
 
-      const data: UnsplashResponse = await response.json()
+      const data: PexelsResponse = await response.json()
       
-      console.log(`✅ Found ${data.results.length} photos for ${style} ${roomType}`)
+      console.log(`✅ Found ${data.photos.length} photos for ${style} ${roomType}`)
 
-      return data.results.map(photo => ({
-        id: photo.id,
-        url: photo.urls.regular,
-        alt: photo.alt_description || `${style} ${roomType} inspiration`,
-        photographer: photo.user.name,
-        photographerUrl: `https://unsplash.com/@${photo.user.username}`,
-        unsplashUrl: photo.links.html
+      return data.photos.map(photo => ({
+        id: photo.id.toString(),
+        url: photo.src.large,
+        alt: photo.alt || `${style} ${roomType} inspiration`,
+        photographer: photo.photographer,
+        photographerUrl: photo.photographer_url,
+        sourceUrl: photo.url
       }))
 
     } catch (error) {
-      console.error('❌ Erreur lors de la récupération des photos Unsplash:', error)
+      console.error('❌ Erreur lors de la récupération des photos Pexels:', error)
       // Retourner des photos de fallback
       return this.getFallbackPhotos(roomType, style, count)
     }
@@ -97,7 +105,7 @@ class UnsplashService {
       try {
         allPhotos[style] = await this.getInspirationPhotos(roomType, style, 4)
         // Petit délai pour éviter de surcharger l'API
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise(resolve => setTimeout(resolve, 200))
       } catch (error) {
         console.error(`❌ Erreur pour ${style} ${roomType}:`, error)
         allPhotos[style] = this.getFallbackPhotos(roomType, style, 4)
@@ -108,7 +116,7 @@ class UnsplashService {
   }
 
   private buildSearchQuery(roomType: string, style: string): string {
-    // Traduction des types de pièces en anglais pour Unsplash
+    // Traduction des types de pièces en anglais pour Pexels
     const roomTranslations: Record<string, string> = {
       'cuisine': 'kitchen',
       'salle-de-bain': 'bathroom',
@@ -139,39 +147,39 @@ class UnsplashService {
   }
 
   private getFallbackPhotos(roomType: string, style: string, count: number): InspirationPhoto[] {
-    // Photos de fallback statiques (URLs Unsplash directes)
+    // Photos de fallback statiques (URLs Pexels directes)
     const fallbackPhotos = [
       {
         id: 'fallback-1',
-        url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800',
+        url: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
         alt: `${style} ${roomType} inspiration`,
-        photographer: 'Unsplash',
-        photographerUrl: 'https://unsplash.com',
-        unsplashUrl: 'https://unsplash.com'
+        photographer: 'Pexels',
+        photographerUrl: 'https://pexels.com',
+        sourceUrl: 'https://pexels.com'
       },
       {
         id: 'fallback-2',
-        url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
+        url: 'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=800',
         alt: `${style} ${roomType} inspiration`,
-        photographer: 'Unsplash',
-        photographerUrl: 'https://unsplash.com',
-        unsplashUrl: 'https://unsplash.com'
+        photographer: 'Pexels',
+        photographerUrl: 'https://pexels.com',
+        sourceUrl: 'https://pexels.com'
       },
       {
         id: 'fallback-3',
-        url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800',
+        url: 'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=800',
         alt: `${style} ${roomType} inspiration`,
-        photographer: 'Unsplash',
-        photographerUrl: 'https://unsplash.com',
-        unsplashUrl: 'https://unsplash.com'
+        photographer: 'Pexels',
+        photographerUrl: 'https://pexels.com',
+        sourceUrl: 'https://pexels.com'
       },
       {
         id: 'fallback-4',
-        url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800',
+        url: 'https://images.pexels.com/photos/1571464/pexels-photo-1571464.jpeg?auto=compress&cs=tinysrgb&w=800',
         alt: `${style} ${roomType} inspiration`,
-        photographer: 'Unsplash',
-        photographerUrl: 'https://unsplash.com',
-        unsplashUrl: 'https://unsplash.com'
+        photographer: 'Pexels',
+        photographerUrl: 'https://pexels.com',
+        sourceUrl: 'https://pexels.com'
       }
     ]
 
@@ -181,18 +189,18 @@ class UnsplashService {
   // Méthode pour valider la clé API
   async validateApiKey(): Promise<boolean> {
     try {
-      const response = await fetch('https://api.unsplash.com/me', {
+      const response = await fetch('https://api.pexels.com/v1/search?query=test&per_page=1', {
         headers: {
-          'Authorization': `Client-ID ${this.config.accessKey}`
+          'Authorization': this.config.apiKey
         }
       })
       return response.ok
     } catch (error) {
-      console.error('Erreur validation Unsplash:', error)
+      console.error('Erreur validation Pexels:', error)
       return false
     }
   }
 }
 
-export { UnsplashService }
-export type { InspirationPhoto, UnsplashPhoto }
+export { PexelsService }
+export type { InspirationPhoto, PexelsPhoto }

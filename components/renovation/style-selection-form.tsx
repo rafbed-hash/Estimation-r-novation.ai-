@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Palette, Sparkles, Upload, X, Loader2 } from "lucide-react"
-import type { InspirationPhoto } from '@/lib/services/unsplash'
+import type { InspirationPhoto } from '@/lib/services/pexels'
 
 interface StyleSelectionFormProps {
   data: any
