@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Home,
   ChefHat,
@@ -12,7 +14,8 @@ import {
   Sofa,
   Briefcase,
   Car,
-  Utensils
+  Utensils,
+  Ruler
 } from "lucide-react"
 
 interface RoomSelectionFormProps {
@@ -23,6 +26,7 @@ interface RoomSelectionFormProps {
 
 export function RoomSelectionForm({ data, onUpdate, onNext }: RoomSelectionFormProps) {
   const [selectedRooms, setSelectedRooms] = useState<string[]>(data.rooms || [])
+  const [roomDimensions, setRoomDimensions] = useState<Record<string, {width: string, length: string, height: string}>>(data.roomDimensions || {})
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const rooms = [
@@ -41,8 +45,17 @@ export function RoomSelectionForm({ data, onUpdate, onNext }: RoomSelectionFormP
   const toggleRoom = (roomId: string) => {
     setSelectedRooms(prev => {
       if (prev.includes(roomId)) {
+        // Remove room and its dimensions
+        const newDimensions = { ...roomDimensions }
+        delete newDimensions[roomId]
+        setRoomDimensions(newDimensions)
         return prev.filter(id => id !== roomId)
       } else {
+        // Add room with default dimensions
+        setRoomDimensions(prev => ({
+          ...prev,
+          [roomId]: { width: '', length: '', height: '8' }
+        }))
         return [...prev, roomId]
       }
     })
@@ -51,6 +64,16 @@ export function RoomSelectionForm({ data, onUpdate, onNext }: RoomSelectionFormP
     if (errors.rooms) {
       setErrors(prev => ({ ...prev, rooms: '' }))
     }
+  }
+
+  const updateRoomDimension = (roomId: string, dimension: 'width' | 'length' | 'height', value: string) => {
+    setRoomDimensions(prev => ({
+      ...prev,
+      [roomId]: {
+        ...prev[roomId],
+        [dimension]: value
+      }
+    }))
   }
 
   const validateForm = () => {
@@ -66,7 +89,10 @@ export function RoomSelectionForm({ data, onUpdate, onNext }: RoomSelectionFormP
 
   const handleSubmit = () => {
     if (validateForm()) {
-      onUpdate({ rooms: selectedRooms })
+      onUpdate({ 
+        rooms: selectedRooms,
+        roomDimensions: roomDimensions
+      })
       onNext()
     }
   }
@@ -138,6 +164,85 @@ export function RoomSelectionForm({ data, onUpdate, onNext }: RoomSelectionFormP
       {errors.rooms && (
         <div className="text-center">
           <p className="text-sm text-red-500">{errors.rooms}</p>
+        </div>
+      )}
+
+      {/* Dimensions des pièces sélectionnées */}
+      {selectedRooms.length > 0 && (
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
+              <Ruler className="h-6 w-6 text-secondary" />
+            </div>
+            <h4 className="text-lg font-semibold">Dimensions des pièces</h4>
+            <p className="text-sm text-muted-foreground">
+              Ajoutez les dimensions pour une estimation plus précise et des transformations IA adaptées
+            </p>
+          </div>
+
+          <div className="grid gap-6">
+            {selectedRooms.map((roomId) => {
+              const room = rooms.find(r => r.id === roomId)
+              const dimensions = roomDimensions[roomId] || { width: '', length: '', height: '8' }
+              
+              if (!room) return null
+              
+              return (
+                <Card key={roomId} className="border-secondary/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <room.icon className="h-5 w-5 text-primary" />
+                      <h5 className="font-semibold">{room.label}</h5>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor={`width-${roomId}`}>Largeur (pi)</Label>
+                        <Input
+                          id={`width-${roomId}`}
+                          type="number"
+                          placeholder="12"
+                          value={dimensions.width}
+                          onChange={(e) => updateRoomDimension(roomId, 'width', e.target.value)}
+                          className="text-center"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`length-${roomId}`}>Longueur (pi)</Label>
+                        <Input
+                          id={`length-${roomId}`}
+                          type="number"
+                          placeholder="15"
+                          value={dimensions.length}
+                          onChange={(e) => updateRoomDimension(roomId, 'length', e.target.value)}
+                          className="text-center"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor={`height-${roomId}`}>Hauteur (pi)</Label>
+                        <Input
+                          id={`height-${roomId}`}
+                          type="number"
+                          placeholder="8"
+                          value={dimensions.height}
+                          onChange={(e) => updateRoomDimension(roomId, 'height', e.target.value)}
+                          className="text-center"
+                        />
+                      </div>
+                    </div>
+                    
+                    {dimensions.width && dimensions.length && (
+                      <div className="mt-3 text-sm text-muted-foreground text-center">
+                        Surface: {Math.round(parseFloat(dimensions.width) * parseFloat(dimensions.length))} pi²
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
         </div>
       )}
 

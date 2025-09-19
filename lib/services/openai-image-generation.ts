@@ -5,11 +5,16 @@ interface OpenAIImageConfig {
   apiKey: string
 }
 
-interface ImageTransformationRequest {
-  originalPhoto: string // Base64 de la photo originale
+interface TransformImageRequest {
+  originalPhoto: string
   roomType: string
   selectedStyle: string
   customPrompt?: string
+  roomDimensions?: {
+    width: string
+    length: string
+    height: string
+  }
 }
 
 interface ImageTransformationResponse {
@@ -29,7 +34,7 @@ class OpenAIImageGenerationService {
     }
   }
 
-  async transformImage(request: ImageTransformationRequest): Promise<ImageTransformationResponse> {
+  async transformImage(request: TransformImageRequest): Promise<ImageTransformationResponse> {
     try {
       const startTime = Date.now()
 
@@ -37,7 +42,8 @@ class OpenAIImageGenerationService {
       const prompt = this.buildTransformationPrompt(
         request.roomType, 
         request.selectedStyle, 
-        request.customPrompt
+        request.customPrompt,
+        request.roomDimensions
       )
 
       console.log('🎨 OpenAI DALL-E 3 - Generating transformed image with prompt:', prompt)
@@ -91,24 +97,39 @@ class OpenAIImageGenerationService {
     }
   }
 
-  private buildTransformationPrompt(roomType: string, style: string, customPrompt?: string): string {
+  private buildTransformationPrompt(roomType: string, style: string, customPrompt?: string, dimensions?: {width: string, length: string, height: string}): string {
+    // Construire les informations de dimensions
+    let dimensionInfo = ''
+    if (dimensions && dimensions.width && dimensions.length) {
+      const surface = Math.round(parseFloat(dimensions.width) * parseFloat(dimensions.length))
+      dimensionInfo = `
+ROOM DIMENSIONS:
+- Width: ${dimensions.width} feet
+- Length: ${dimensions.length} feet
+- Height: ${dimensions.height || '8'} feet
+- Floor area: ${surface} square feet
+- Scale: Design for a ${surface < 100 ? 'compact' : surface < 200 ? 'medium-sized' : 'spacious'} room
+`
+    }
+
     const basePrompt = `
 Create a photorealistic ${roomType} interior design in ${style} style.
 
 STYLE CHARACTERISTICS:
 ${this.getStyleDescription(style)}
-
+${dimensionInfo}
 REQUIREMENTS:
 - Photorealistic rendering
 - Professional interior design
 - High-quality finishes and materials
 - Proper lighting and shadows
-- Realistic proportions and perspective
+- Realistic proportions and perspective${dimensions ? ' matching the specified room dimensions' : ''}
 - Modern ${roomType} layout
+- Furniture and fixtures appropriately sized for the space
 
 ${customPrompt ? `Additional requirements: ${customPrompt}` : ''}
 
-Generate a beautiful, inspiring ${style} ${roomType} that could be featured in a home design magazine.
+Generate a beautiful, inspiring ${style} ${roomType} that could be featured in a home design magazine${dimensions ? `, with furniture and layout optimized for the ${Math.round(parseFloat(dimensions.width || '0') * parseFloat(dimensions.length || '0'))} sq ft space` : ''}.
 `
 
     return basePrompt.trim()
@@ -145,4 +166,4 @@ Generate a beautiful, inspiring ${style} ${roomType} that could be featured in a
 }
 
 export { OpenAIImageGenerationService }
-export type { ImageTransformationRequest, ImageTransformationResponse }
+export type { TransformImageRequest, ImageTransformationResponse }

@@ -63,11 +63,19 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('🎨 Generating transformed image with DALL-E 3...')
+      
+      // Récupérer les dimensions de la première pièce sélectionnée
+      const firstRoom = body.project.selectedRooms[0] || 'salle-de-bain'
+      const roomDimensions = body.project.roomDimensions?.[firstRoom]
+      
+      console.log('📏 Room dimensions:', roomDimensions)
+      
       const transformationResult = await dalleAI.transformImage({
         originalPhoto: mainPhoto,
-        roomType: body.project.selectedRooms[0] || 'salle-de-bain',
+        roomType: firstRoom,
         selectedStyle: body.project.selectedStyle,
-        customPrompt: body.project.customPrompt
+        customPrompt: body.project.customPrompt,
+        roomDimensions: roomDimensions
       })
       
       console.log('✅ DALL-E 3 transformation completed')
