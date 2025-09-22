@@ -28,6 +28,8 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
   const [budget, setBudget] = useState(data.budget || [15000])
   const [selectedOptimizations, setSelectedOptimizations] = useState(data.optimizations || [])
   const [priorityLevel, setPriorityLevel] = useState(data.priorityLevel || 'économique')
+  const [budgetPriorities, setBudgetPriorities] = useState(data.budgetPriorities || {})
+  const [selectedBudgetProfile, setSelectedBudgetProfile] = useState(data.budgetProfile || 'equilibre')
 
   // Options d'optimisation des coûts
   const optimizationOptions = [
@@ -134,6 +136,61 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
     { min: 50000, max: 100000, label: 'Budget élevé', color: 'bg-blue-100 text-blue-800' }
   ]
 
+  // Profils de budget prédéfinis pour guider l'IA
+  const budgetProfiles = [
+    {
+      id: 'economique',
+      title: 'Économique',
+      description: 'Maximiser les économies, privilégier les alternatives abordables',
+      icon: DollarSign,
+      aiGuidelines: {
+        materialQuality: 'basic',
+        finishLevel: 'standard',
+        brandPreference: 'generic',
+        customization: 'minimal'
+      },
+      color: 'bg-red-100 text-red-800 border-red-200'
+    },
+    {
+      id: 'equilibre',
+      title: 'Équilibré',
+      description: 'Bon rapport qualité-prix, mix entre économies et qualité',
+      icon: Calculator,
+      aiGuidelines: {
+        materialQuality: 'mid-range',
+        finishLevel: 'good',
+        brandPreference: 'mid-range',
+        customization: 'moderate'
+      },
+      color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+    },
+    {
+      id: 'qualite',
+      title: 'Qualité Premium',
+      description: 'Privilégier la qualité et la durabilité, budget plus flexible',
+      icon: Palette,
+      aiGuidelines: {
+        materialQuality: 'premium',
+        finishLevel: 'high-end',
+        brandPreference: 'premium',
+        customization: 'extensive'
+      },
+      color: 'bg-green-100 text-green-800 border-green-200'
+    }
+  ]
+
+  // Priorités budgétaires pour guider l'IA dans l'allocation des ressources
+  const budgetPriorityOptions = [
+    { id: 'structure', label: 'Structure & Gros œuvre', description: 'Fondations, murs, toiture' },
+    { id: 'isolation', label: 'Isolation & Étanchéité', description: 'Efficacité énergétique' },
+    { id: 'plomberie', label: 'Plomberie & Électricité', description: 'Installations techniques' },
+    { id: 'cuisine', label: 'Cuisine & Électroménager', description: 'Équipements de cuisine' },
+    { id: 'salle-bain', label: 'Salle de bain', description: 'Sanitaires et carrelage' },
+    { id: 'sols', label: 'Revêtements de sol', description: 'Parquet, carrelage, moquette' },
+    { id: 'peinture', label: 'Peinture & Décoration', description: 'Finitions décoratives' },
+    { id: 'mobilier', label: 'Mobilier intégré', description: 'Placards, dressings' }
+  ]
+
   const getCurrentBudgetRange = () => {
     const currentBudget = budget[0]
     return budgetRanges.find(range => currentBudget >= range.min && currentBudget <= range.max) || budgetRanges[0]
@@ -145,6 +202,24 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
         ? prev.filter((id: string) => id !== optionId)
         : [...prev, optionId]
     )
+  }
+
+  const handleBudgetProfileChange = (profileId: string) => {
+    setSelectedBudgetProfile(profileId)
+    // Ajuster automatiquement le budget selon le profil
+    const profile = budgetProfiles.find(p => p.id === profileId)
+    if (profile && profileId === 'economique' && budget[0] > 25000) {
+      setBudget([Math.min(budget[0], 25000)])
+    } else if (profile && profileId === 'qualite' && budget[0] < 30000) {
+      setBudget([Math.max(budget[0], 30000)])
+    }
+  }
+
+  const handlePriorityToggle = (priorityId: string, level: 'high' | 'medium' | 'low') => {
+    setBudgetPriorities((prev: any) => ({
+      ...prev,
+      [priorityId]: level
+    }))
   }
 
   const calculatePotentialSavings = () => {
@@ -173,11 +248,22 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
 
   const handleSubmit = () => {
     const savings = calculatePotentialSavings()
+    const selectedProfile = budgetProfiles.find(p => p.id === selectedBudgetProfile)
+    
     onUpdate({
       budget: budget[0],
       optimizations: selectedOptimizations,
       priorityLevel,
-      potentialSavings: savings
+      potentialSavings: savings,
+      budgetProfile: selectedBudgetProfile,
+      budgetPriorities,
+      aiGuidelines: selectedProfile?.aiGuidelines || {},
+      budgetConstraints: {
+        maxBudget: budget[0],
+        priorityAreas: Object.keys(budgetPriorities).filter(key => budgetPriorities[key] === 'high'),
+        economyAreas: Object.keys(budgetPriorities).filter(key => budgetPriorities[key] === 'low'),
+        qualityLevel: selectedProfile?.aiGuidelines.materialQuality || 'mid-range'
+      }
     })
     onNext()
   }
@@ -257,6 +343,113 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
         </CardContent>
       </Card>
 
+      {/* Profils de budget pour guider l'IA */}
+      <Card className="border-2 border-blue-200">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Palette className="h-5 w-5" />
+            <span>Profil de budget pour l'IA</span>
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Choisissez comment l'IA doit adapter le design selon votre budget
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4">
+            {budgetProfiles.map((profile) => {
+              const isSelected = selectedBudgetProfile === profile.id
+              const IconComponent = profile.icon
+              
+              return (
+                <Card 
+                  key={profile.id}
+                  className={`cursor-pointer transition-all border-2 ${
+                    isSelected 
+                      ? profile.color.replace('100', '200') + ' bg-opacity-50' 
+                      : 'border-border hover:border-blue-300'
+                  }`}
+                  onClick={() => handleBudgetProfileChange(profile.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                        isSelected ? profile.color.split(' ')[0] : 'bg-muted'
+                      }`}>
+                        <IconComponent className={`h-6 w-6 ${
+                          isSelected ? profile.color.split(' ')[1] : 'text-muted-foreground'
+                        }`} />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-semibold">{profile.title}</h5>
+                        <p className="text-sm text-muted-foreground">
+                          {profile.description}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <Badge className={profile.color}>
+                          Sélectionné
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Priorités budgétaires */}
+      <Card className="border-2 border-purple-200">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Calculator className="h-5 w-5" />
+            <span>Priorités budgétaires</span>
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Indiquez où investir en priorité pour guider l'IA dans ses recommandations
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3">
+            {budgetPriorityOptions.map((option) => (
+              <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex-1">
+                  <h6 className="font-medium">{option.label}</h6>
+                  <p className="text-xs text-muted-foreground">{option.description}</p>
+                </div>
+                <div className="flex space-x-2">
+                  {['high', 'medium', 'low'].map((level) => (
+                    <Button
+                      key={level}
+                      variant={budgetPriorities[option.id] === level ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePriorityToggle(option.id, level as 'high' | 'medium' | 'low')}
+                      className={`text-xs px-2 py-1 ${
+                        level === 'high' ? 'bg-green-500 hover:bg-green-600' :
+                        level === 'medium' ? 'bg-yellow-500 hover:bg-yellow-600' :
+                        'bg-red-500 hover:bg-red-600'
+                      } ${budgetPriorities[option.id] === level ? 'text-white' : ''}`}
+                    >
+                      {level === 'high' ? 'Priorité' : level === 'medium' ? 'Moyen' : 'Économie'}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
+            <h6 className="font-medium text-purple-800 mb-2">Guide pour l'IA :</h6>
+            <div className="text-sm text-purple-700 space-y-1">
+              <div><strong>Priorité :</strong> L'IA privilégiera la qualité et investira davantage</div>
+              <div><strong>Moyen :</strong> L'IA maintiendra un équilibre qualité-prix</div>
+              <div><strong>Économie :</strong> L'IA proposera des alternatives moins coûteuses</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Options d'optimisation */}
       <div className="space-y-6">
         <h4 className="text-xl font-semibold">Options d'économies</h4>
@@ -280,7 +473,7 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
                   <div className="flex items-start space-x-4">
                     <Checkbox 
                       checked={isSelected}
-                      onChange={() => handleOptimizationToggle(option.id)}
+                      onCheckedChange={() => handleOptimizationToggle(option.id)}
                       className="mt-1"
                     />
                     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
@@ -340,6 +533,93 @@ export function CostOptimizationForm({ data, onUpdate, onNext }: CostOptimizatio
                 <Badge className="bg-green-100 text-green-800 text-lg px-4 py-2">
                   Économie: {economicAlternatives[selectedStyle].savings}
                 </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Impact des choix budgétaires sur l'IA */}
+      {(selectedBudgetProfile || Object.keys(budgetPriorities).length > 0) && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2 text-blue-800">
+              <Lightbulb className="h-5 w-5" />
+              <span>Impact de vos choix sur les recommandations IA</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {selectedBudgetProfile && (
+                <div>
+                  <h6 className="font-medium text-blue-800 mb-2">
+                    Profil sélectionné : {budgetProfiles.find(p => p.id === selectedBudgetProfile)?.title}
+                  </h6>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Qualité des matériaux :</span>
+                      <span className="ml-2 text-blue-700">
+                        {budgetProfiles.find(p => p.id === selectedBudgetProfile)?.aiGuidelines.materialQuality}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Niveau de finition :</span>
+                      <span className="ml-2 text-blue-700">
+                        {budgetProfiles.find(p => p.id === selectedBudgetProfile)?.aiGuidelines.finishLevel}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Marques privilégiées :</span>
+                      <span className="ml-2 text-blue-700">
+                        {budgetProfiles.find(p => p.id === selectedBudgetProfile)?.aiGuidelines.brandPreference}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Personnalisation :</span>
+                      <span className="ml-2 text-blue-700">
+                        {budgetProfiles.find(p => p.id === selectedBudgetProfile)?.aiGuidelines.customization}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {Object.keys(budgetPriorities).length > 0 && (
+                <div>
+                  <h6 className="font-medium text-blue-800 mb-2">Répartition budgétaire :</h6>
+                  <div className="space-y-2">
+                    {Object.keys(budgetPriorities).filter(key => budgetPriorities[key] === 'high').length > 0 && (
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-green-100 text-green-800">Priorité élevée</Badge>
+                        <span className="text-sm">
+                          {Object.keys(budgetPriorities)
+                            .filter(key => budgetPriorities[key] === 'high')
+                            .map(key => budgetPriorityOptions.find(opt => opt.id === key)?.label)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                    {Object.keys(budgetPriorities).filter(key => budgetPriorities[key] === 'low').length > 0 && (
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-red-100 text-red-800">Économies ciblées</Badge>
+                        <span className="text-sm">
+                          {Object.keys(budgetPriorities)
+                            .filter(key => budgetPriorities[key] === 'low')
+                            .map(key => budgetPriorityOptions.find(opt => opt.id === key)?.label)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-white border border-blue-300 rounded-lg p-3">
+                <p className="text-sm text-blue-700">
+                  <strong>L'IA adaptera automatiquement :</strong> Les matériaux proposés, 
+                  les marques recommandées, le niveau de finition et les alternatives économiques 
+                  en fonction de vos choix ci-dessus.
+                </p>
               </div>
             </div>
           </CardContent>

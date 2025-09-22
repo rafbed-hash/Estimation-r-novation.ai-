@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Palette, Sparkles, Upload, X, Loader2 } from "lucide-react"
+import { Palette, Sparkles, Upload, X, Loader2, Info, Eye, Camera } from "lucide-react"
 import type { InspirationPhoto } from '@/lib/services/pexels'
 
 interface StyleSelectionFormProps {
@@ -20,6 +20,7 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [stylePhotos, setStylePhotos] = useState<Record<string, InspirationPhoto[]>>({})
   const [loadingPhotos, setLoadingPhotos] = useState(false)
+  const [showPhotoDetails, setShowPhotoDetails] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Conseils d'expert par style et pièce
@@ -304,16 +305,97 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                               loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                            
+                            {/* Overlay avec métadonnées */}
+                            <div className="absolute top-2 right-2 flex space-x-2">
+                              <Badge className="bg-blue-600/90 text-white text-xs backdrop-blur-sm">
+                                <Camera className="h-3 w-3 mr-1" />
+                                Pexels
+                              </Badge>
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="h-6 w-6 p-0 bg-white/90 hover:bg-white"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setShowPhotoDetails(showPhotoDetails === mainPhoto.id ? null : mainPhoto.id)
+                                }}
+                              >
+                                <Info className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            
                             <div className="absolute bottom-4 left-4 text-white">
                               <p className="text-sm font-medium">Photo principale</p>
                               <p className="text-xs opacity-80">Par {mainPhoto.photographer}</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/30">
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Inspiration {style.name}
+                                </Badge>
+                              </div>
                             </div>
                           </div>
+                          
+                          {/* Panneau de détails de la photo */}
+                          {showPhotoDetails === mainPhoto.id && (
+                            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-10">
+                              <div className="bg-white rounded-lg p-4 max-w-sm w-full">
+                                <div className="flex items-center justify-between mb-3">
+                                  <h6 className="font-semibold text-gray-900">Détails de la photo</h6>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => setShowPhotoDetails(null)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Source:</span>
+                                    <span className="font-medium">Pexels</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Photographe:</span>
+                                    <span className="font-medium">{mainPhoto.photographer}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Style:</span>
+                                    <span className="font-medium">{style.name}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">Pièce:</span>
+                                    <span className="font-medium">{selectedRoom}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-600">ID Photo:</span>
+                                    <span className="font-medium text-xs">#{mainPhoto.id}</span>
+                                  </div>
+                                  <div className="pt-2 border-t">
+                                    <p className="text-xs text-gray-500">
+                                      Cette photo d'inspiration a été sélectionnée par notre IA pour correspondre parfaitement au style {style.name} de votre {selectedRoom}.
+                                    </p>
+                                  </div>
+                                  <div className="pt-2">
+                                    <Button
+                                      size="sm"
+                                      className="w-full text-xs"
+                                      onClick={() => window.open(mainPhoto.sourceUrl, '_blank')}
+                                    >
+                                      Voir sur Pexels
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Photos secondaires */}
                         <div className="space-y-4">
-                          {photos.slice(1, 3).map((photo) => (
+                          {photos.slice(1, 3).map((photo, index) => (
                             <div key={photo.id} className="relative group/secondary">
                               <div className="aspect-[4/3] overflow-hidden rounded-lg">
                                 <img 
@@ -323,7 +405,64 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                                   loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-black/10 hover:bg-black/5 transition-colors" />
+                                
+                                {/* Overlay pour photos secondaires */}
+                                <div className="absolute top-2 right-2 opacity-0 group-hover/secondary:opacity-100 transition-opacity">
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="h-5 w-5 p-0 bg-white/90 hover:bg-white"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setShowPhotoDetails(showPhotoDetails === photo.id ? null : photo.id)
+                                    }}
+                                  >
+                                    <Info className="h-2 w-2" />
+                                  </Button>
+                                </div>
+                                
+                                <div className="absolute bottom-2 left-2 opacity-0 group-hover/secondary:opacity-100 transition-opacity">
+                                  <Badge className="text-xs bg-black/70 text-white border-none">
+                                    #{index + 2}
+                                  </Badge>
+                                </div>
                               </div>
+                              
+                              {/* Panneau de détails pour photos secondaires */}
+                              {showPhotoDetails === photo.id && (
+                                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 z-10 rounded-lg">
+                                  <div className="bg-white rounded-lg p-3 max-w-xs w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <h6 className="font-semibold text-gray-900 text-sm">Photo #{index + 2}</h6>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-5 w-5 p-0"
+                                        onClick={() => setShowPhotoDetails(null)}
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                    <div className="space-y-1 text-xs">
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-600">Par:</span>
+                                        <span className="font-medium">{photo.photographer}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-600">ID:</span>
+                                        <span className="font-medium">#{photo.id}</span>
+                                      </div>
+                                      <Button
+                                        size="sm"
+                                        className="w-full text-xs mt-2"
+                                        onClick={() => window.open(photo.sourceUrl, '_blank')}
+                                      >
+                                        Voir détails
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))}
                           
@@ -369,6 +508,121 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
           </div>
         )}
       </div>
+
+      {/* Bande de données des photos d'inspiration */}
+      {!loadingPhotos && Object.keys(stylePhotos).length > 0 && (
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <Camera className="h-5 w-5 text-blue-600" />
+                <h4 className="font-semibold text-blue-800">Bande de données - Photos d'inspiration</h4>
+                <Badge className="bg-blue-100 text-blue-800">
+                  {Object.values(stylePhotos).flat().length} photos scrapées
+                </Badge>
+              </div>
+
+              {/* Statistiques globales */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {Object.keys(stylePhotos).length}
+                  </div>
+                  <div className="text-xs text-blue-500">Styles couverts</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {Object.values(stylePhotos).flat().length}
+                  </div>
+                  <div className="text-xs text-blue-500">Photos totales</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {new Set(Object.values(stylePhotos).flat().map(p => p.photographer)).size}
+                  </div>
+                  <div className="text-xs text-blue-500">Photographes</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">
+                    Pexels
+                  </div>
+                  <div className="text-xs text-blue-500">Source API</div>
+                </div>
+              </div>
+
+              {/* Détails par style */}
+              <div className="space-y-3">
+                <h5 className="font-medium text-blue-700">Répartition par style :</h5>
+                <div className="grid gap-2">
+                  {Object.entries(stylePhotos).map(([styleId, photos]) => {
+                    const styleName = styles.find(s => s.id === styleId)?.name || styleId
+                    return (
+                      <div key={styleId} className="flex items-center justify-between p-2 bg-white rounded border border-blue-100">
+                        <div className="flex items-center space-x-3">
+                          <Badge variant="outline" className="text-blue-700 border-blue-300">
+                            {styleName}
+                          </Badge>
+                          <span className="text-sm text-blue-600">
+                            {photos.length} photo{photos.length > 1 ? 's' : ''}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-xs text-blue-500">
+                          <span>Par: {photos.map(p => p.photographer).slice(0, 2).join(', ')}</span>
+                          {photos.length > 2 && <span>+{photos.length - 2}</span>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Informations techniques */}
+              <div className="bg-gradient-to-r from-blue-100 to-indigo-100 p-4 rounded-lg border border-blue-300">
+                <h5 className="font-medium text-blue-800 mb-2 flex items-center space-x-2">
+                  <Info className="h-4 w-4" />
+                  <span>Informations techniques du scraping</span>
+                </h5>
+                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">API utilisée:</span>
+                      <span className="font-medium">Pexels API v1</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">Type de pièce:</span>
+                      <span className="font-medium">{selectedRoom}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">Orientation:</span>
+                      <span className="font-medium">Paysage (landscape)</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">Qualité:</span>
+                      <span className="font-medium">Haute résolution</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">Licence:</span>
+                      <span className="font-medium">Pexels License</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-blue-600">Mise à jour:</span>
+                      <span className="font-medium">Temps réel</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <p className="text-xs text-blue-600">
+                    💡 <strong>Note:</strong> Toutes les photos sont scrapées en temps réel depuis Pexels selon vos critères de style et de pièce. 
+                    Cliquez sur l'icône ℹ️ sur chaque photo pour voir ses métadonnées détaillées.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Option photo personnalisée */}
       <div className="space-y-4">
