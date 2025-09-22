@@ -20,12 +20,26 @@ export async function POST(request: NextRequest) {
     console.log('✅ Data validation passed')
 
     // Initialisation des services avec Nano Banana (Gemini 2.5 Flash)
-    const nanoBananaKey = 'AIzaSyC1x0c6u7dnez9UlwuyVZtbX9pXzMzNU8U' // Clé Nano Banana
+    const nanoBananaKey = process.env.NANO_BANANA_API_KEY || process.env.GOOGLE_AI_STUDIO_API_KEY
     const openAIKey = process.env.OPENAI_API_KEY
 
     console.log('🔑 API Keys check:')
     console.log('- Nano Banana (Gemini 2.5 Flash):', !!nanoBananaKey)
     console.log('- OpenAI:', !!openAIKey)
+
+    if (!nanoBananaKey) {
+      console.log('❌ Missing Nano Banana API key')
+      return NextResponse.json(
+        { 
+          error: 'Clé API Nano Banana manquante. Veuillez configurer NANO_BANANA_API_KEY dans vos variables d\'environnement.',
+          details: {
+            openAI: !!openAIKey,
+            nanoBanana: !!nanoBananaKey
+          }
+        },
+        { status: 500 }
+      )
+    }
 
     if (!openAIKey) {
       console.log('❌ Missing API keys - OpenAI:', !!openAIKey)
