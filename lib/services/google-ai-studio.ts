@@ -28,7 +28,7 @@ class GoogleAIStudioService {
   constructor(apiKey: string) {
     this.config = {
       apiKey,
-      model: 'gemini-2.0-flash' // Modèle Google Gemini 2.0 Flash
+      model: 'gemini-2.5-flash' // Modèle Google Gemini 2.5 Flash Image (Nano Banana)
     }
   }
 

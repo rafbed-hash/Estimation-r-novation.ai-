@@ -294,10 +294,10 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                     onClick={() => handleStyleSelect(style.id)}
                   >
                     {mainPhoto ? (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-xl overflow-hidden bg-muted">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 rounded-lg overflow-hidden bg-muted">
                         {/* Photo principale */}
                         <div className="md:col-span-2 relative group/main">
-                          <div className="aspect-[4/3] overflow-hidden">
+                          <div className="aspect-[3/2] overflow-hidden">
                             <img 
                               src={mainPhoto.url} 
                               alt={mainPhoto.alt}
@@ -394,10 +394,10 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                         </div>
 
                         {/* Photos secondaires */}
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                           {photos.slice(1, 3).map((photo, index) => (
                             <div key={photo.id} className="relative group/secondary">
-                              <div className="aspect-[4/3] overflow-hidden rounded-lg">
+                              <div className="aspect-[3/2] overflow-hidden rounded-md">
                                 <img 
                                   src={photo.url} 
                                   alt={photo.alt}
@@ -467,7 +467,7 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                           ))}
                           
                           {photos.length > 3 && (
-                            <div className="aspect-[4/3] bg-primary/10 rounded-lg flex items-center justify-center border-2 border-dashed border-primary/30">
+                            <div className="aspect-[3/2] bg-primary/10 rounded-md flex items-center justify-center border-2 border-dashed border-primary/30">
                               <div className="text-center">
                                 <Palette className="h-8 w-8 text-primary mx-auto mb-2" />
                                 <p className="text-sm font-medium text-primary">+{photos.length - 3} photos</p>
@@ -478,7 +478,7 @@ export function StyleSelectionForm({ data, onUpdate, onNext }: StyleSelectionFor
                         </div>
                       </div>
                     ) : (
-                      <div className="aspect-[4/3] bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
+                      <div className="aspect-[3/2] bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
                         <div className="text-center space-y-3">
                           <Palette className="h-16 w-16 text-muted-foreground mx-auto" />
                           <div>

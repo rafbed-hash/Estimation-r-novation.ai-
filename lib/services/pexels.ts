@@ -82,7 +82,7 @@ class PexelsService {
 
       return data.photos.map(photo => ({
         id: photo.id.toString(),
-        url: photo.src.large,
+        url: photo.src.medium, // Utiliser medium au lieu de large pour des images plus petites
         alt: photo.alt || `${style} ${roomType} inspiration`,
         photographer: photo.photographer,
         photographerUrl: photo.photographer_url,
@@ -147,43 +147,44 @@ class PexelsService {
   }
 
   private getFallbackPhotos(roomType: string, style: string, count: number): InspirationPhoto[] {
-    // Photos de fallback statiques (URLs Pexels directes)
-    const fallbackPhotos = [
-      {
-        id: 'fallback-1',
-        url: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
-        alt: `${style} ${roomType} inspiration`,
-        photographer: 'Pexels',
-        photographerUrl: 'https://pexels.com',
-        sourceUrl: 'https://pexels.com'
-      },
-      {
-        id: 'fallback-2',
-        url: 'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=800',
-        alt: `${style} ${roomType} inspiration`,
-        photographer: 'Pexels',
-        photographerUrl: 'https://pexels.com',
-        sourceUrl: 'https://pexels.com'
-      },
-      {
-        id: 'fallback-3',
-        url: 'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=800',
-        alt: `${style} ${roomType} inspiration`,
-        photographer: 'Pexels',
-        photographerUrl: 'https://pexels.com',
-        sourceUrl: 'https://pexels.com'
-      },
-      {
-        id: 'fallback-4',
-        url: 'https://images.pexels.com/photos/1571464/pexels-photo-1571464.jpeg?auto=compress&cs=tinysrgb&w=800',
-        alt: `${style} ${roomType} inspiration`,
-        photographer: 'Pexels',
-        photographerUrl: 'https://pexels.com',
-        sourceUrl: 'https://pexels.com'
-      }
-    ]
+    // Photos de fallback statiques avec URLs plus petites et variées par style
+    const fallbackPhotosByStyle: Record<string, string[]> = {
+      'moderne': [
+        'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/2029667/pexels-photo-2029667.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/2062426/pexels-photo-2062426.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      'scandinave': [
+        'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1454804/pexels-photo-1454804.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      'industriel': [
+        'https://images.pexels.com/photos/1571464/pexels-photo-1571464.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/2079246/pexels-photo-2079246.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      'classique': [
+        'https://images.pexels.com/photos/1571467/pexels-photo-1571467.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1444424/pexels-photo-1444424.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ]
+    }
 
-    return fallbackPhotos.slice(0, count)
+    const stylePhotos = fallbackPhotosByStyle[style] || fallbackPhotosByStyle['moderne']
+    
+    return stylePhotos.slice(0, count).map((url, index) => ({
+      id: `fallback-${style}-${index + 1}`,
+      url,
+      alt: `${style} ${roomType} inspiration`,
+      photographer: 'Pexels Community',
+      photographerUrl: 'https://pexels.com',
+      sourceUrl: 'https://pexels.com'
+    }))
   }
 
   // Méthode pour valider la clé API
