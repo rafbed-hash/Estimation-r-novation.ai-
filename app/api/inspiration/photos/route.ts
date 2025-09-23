@@ -10,16 +10,10 @@ export async function GET(request: NextRequest) {
 
     console.log(`🖼️ API /inspiration/photos called for ${style} ${roomType}`)
 
-    // Vérifier la clé API Pexels
-    const pexelsKey = process.env.PEXELS_API_KEY
+    // Récupérer la clé API Pexels (peut être undefined, le service gérera le fallback)
+    const pexelsKey = process.env.PEXELS_API_KEY || 'fallback_key'
 
-    if (!pexelsKey) {
-      console.log('❌ Missing Pexels API key')
-      return NextResponse.json(
-        { error: 'Clé API Pexels manquante' },
-        { status: 500 }
-      )
-    }
+    console.log('🔑 Pexels API key status:', pexelsKey ? 'Available' : 'Using fallback')
 
     const pexels = new PexelsService(pexelsKey)
 
@@ -56,14 +50,9 @@ export async function POST(request: NextRequest) {
 
     console.log(`🖼️ API /inspiration/photos POST called for all styles of ${roomType}`)
 
-    const pexelsKey = process.env.PEXELS_API_KEY
+    const pexelsKey = process.env.PEXELS_API_KEY || 'fallback_key'
 
-    if (!pexelsKey) {
-      return NextResponse.json(
-        { error: 'Clé API Pexels manquante' },
-        { status: 500 }
-      )
-    }
+    console.log('🔑 Pexels API key status (POST):', pexelsKey ? 'Available' : 'Using fallback')
 
     const pexels = new PexelsService(pexelsKey)
 
