@@ -59,6 +59,12 @@ class PexelsService {
     try {
       console.log(`🖼️ Fetching ${count} inspiration photos for ${style} ${roomType}`)
 
+      // Vérifier si nous avons une vraie clé API Pexels
+      if (!this.config.apiKey || this.config.apiKey === 'test_key' || this.config.apiKey === 'your_pexels_api_key_here') {
+        console.log('⚠️ No valid Pexels API key, using fallback photos')
+        return this.getFallbackPhotos(roomType, style, count)
+      }
+
       // Construire la requête de recherche
       const query = this.buildSearchQuery(roomType, style)
       
@@ -73,7 +79,8 @@ class PexelsService {
 
       if (!response.ok) {
         console.error('❌ Pexels API Error:', response.status, response.statusText)
-        throw new Error(`Erreur API Pexels: ${response.status}`)
+        console.log('🔄 Falling back to static photos')
+        return this.getFallbackPhotos(roomType, style, count)
       }
 
       const data: PexelsResponse = await response.json()
@@ -91,6 +98,7 @@ class PexelsService {
 
     } catch (error) {
       console.error('❌ Erreur lors de la récupération des photos Pexels:', error)
+      console.log('🔄 Using fallback photos due to error')
       // Retourner des photos de fallback
       return this.getFallbackPhotos(roomType, style, count)
     }
@@ -172,6 +180,18 @@ class PexelsService {
         'https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/1444424/pexels-photo-1444424.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      'campagne': [
+        'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1454804/pexels-photo-1454804.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      'spa': [
+        'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/1454804/pexels-photo-1454804.jpeg?auto=compress&cs=tinysrgb&w=400'
       ]
     }
 
