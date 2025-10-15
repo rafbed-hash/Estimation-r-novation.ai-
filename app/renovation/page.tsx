@@ -4,14 +4,13 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send, TrendingDown } from "lucide-react"
+import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send } from "lucide-react"
 import { 
   ClientInfoForm,
   HouseInfoForm,
   RoomSelectionForm,
   PhotoUploadForm,
   StyleSelectionForm,
-  CostOptimizationForm,
   ResultsDisplay
 } from "../../components/renovation"
 
@@ -33,8 +32,7 @@ export default function RenovationPage() {
     { id: 3, title: "Sélection des Pièces", icon: Home, component: RoomSelectionForm },
     { id: 4, title: "Photos de la Pièce", icon: Upload, component: PhotoUploadForm },
     { id: 5, title: "Choix du Style", icon: Palette, component: StyleSelectionForm },
-    { id: 6, title: "Optimisation des Coûts", icon: TrendingDown, component: CostOptimizationForm },
-    { id: 7, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+    { id: 6, title: "Résultats", icon: Calculator, component: ResultsDisplay }
   ]
 
   const handleNext = () => {
