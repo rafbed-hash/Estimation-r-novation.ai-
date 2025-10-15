@@ -100,6 +100,14 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('❌ Nano Banana failed, using fallback:', error)
       
+      // Log specific error details for debugging
+      if (error instanceof Error) {
+        console.error('❌ Error message:', error.message)
+        if (error.message.includes('base64')) {
+          console.error('🔍 Photo format issue detected - photos may not be properly converted to base64')
+        }
+      }
+      
       // Utiliser des résultats de fallback avec analyse basique
       const mainPhoto = body.project.photos?.[0]
       aiResults = {

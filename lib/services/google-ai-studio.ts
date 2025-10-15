@@ -170,13 +170,25 @@ Soyez précis et professionnel dans votre analyse.
   private extractBase64FromPhoto(photo: string): string {
     // Si c'est déjà en base64, extraire la partie après la virgule
     if (photo.startsWith('data:image/')) {
-      return photo.split(',')[1]
+      const base64Data = photo.split(',')[1]
+      if (!base64Data) {
+        throw new Error('Invalid base64 format: missing data after comma')
+      }
+      return base64Data
     }
     
-    // Si c'est une URL d'objet, on ne peut pas l'utiliser directement avec Gemini
-    // Il faudrait d'abord convertir l'URL en base64
-    console.warn('⚠️ Photo URL detected, Gemini needs base64:', photo.substring(0, 50) + '...')
-    throw new Error('Photo must be in base64 format for Gemini API')
+    // Si c'est une URL d'objet ou autre format non supporté
+    if (photo.startsWith('blob:') || photo.startsWith('http')) {
+      console.warn('⚠️ Photo URL detected, Gemini needs base64:', photo.substring(0, 50) + '...')
+      throw new Error('Photo must be in base64 format for Gemini API. Please convert blob URLs to base64.')
+    }
+    
+    // Si c'est déjà du base64 pur (sans préfixe data:image/)
+    if (photo.length > 100 && /^[A-Za-z0-9+/=]+$/.test(photo)) {
+      return photo
+    }
+    
+    throw new Error(`Unsupported photo format. Expected base64 data, got: ${photo.substring(0, 50)}...`)
   }
 
   // Méthode pour valider la clé API

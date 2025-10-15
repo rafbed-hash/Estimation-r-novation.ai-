@@ -123,9 +123,30 @@ export function PhotoUploadForm({ data, onUpdate, onNext }: PhotoUploadFormProps
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = () => {
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = error => reject(error)
+    })
+  }
+
+  const handleSubmit = async () => {
     if (validateForm()) {
-      onUpdate({ photos })
+      // Convert photos to base64 for API
+      const base64Photos = await Promise.all(
+        photos.map(async (photo) => {
+          try {
+            return await convertToBase64(photo.file)
+          } catch (error) {
+            console.error('Error converting photo to base64:', error)
+            return photo.preview // Fallback to blob URL
+          }
+        })
+      )
+      
+      onUpdate({ photos: base64Photos })
       onNext()
     }
   }
