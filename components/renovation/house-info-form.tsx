@@ -54,9 +54,7 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
       newErrors.propertyType = 'Le type de propriété est requis'
     }
 
-    if (!formData.surface) {
-      newErrors.surface = 'La superficie est requise'
-    } else if (parseInt(formData.surface) <= 0) {
+    if (formData.surface && parseInt(formData.surface) <= 0) {
       newErrors.surface = 'La superficie doit être supérieure à 0'
     }
 
@@ -151,7 +149,7 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Superficie */}
           <div className="space-y-2">
-            <Label htmlFor="surface">Surface habitable (pi²)</Label>
+            <Label htmlFor="surface">Surface habitable (pi²) - optionnel</Label>
             <Input
               id="surface"
               type="number"
@@ -207,8 +205,8 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
             <div>
               <h4 className="font-semibold text-foreground mb-2">Pourquoi ces informations ?</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Ces détails nous permettent de calculer plus précisément les coûts de matériaux et de main-d'œuvre, 
-                et d'adapter nos recommandations de style selon le type et l'âge de votre propriété.
+                Ces détails nous permettent d'adapter nos recommandations de style selon le type et l'âge de votre propriété. 
+                La superficie est optionnelle mais peut aider à affiner l'estimation des coûts.
               </p>
             </div>
           </div>
