@@ -1,0 +1,23 @@
+{
+  "name": "estimation-renovation-ai",
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "GOOGLE_AI_API_KEY": "@google-ai-api-key",
+    "PEXELS_API_KEY": "@pexels-api-key",
+    "NEXT_PUBLIC_MAKE_WEBHOOK_URL": "@make-webhook-url",
+    "MAKE_API_KEY": "@make-api-key"
+  },
+  "build": {
+    "env": {
+      "GOOGLE_AI_API_KEY": "@google-ai-api-key",
+      "PEXELS_API_KEY": "@pexels-api-key",
+      "NEXT_PUBLIC_MAKE_WEBHOOK_URL": "@make-webhook-url",
+      "MAKE_API_KEY": "@make-api-key"
+    }
+  }
+}

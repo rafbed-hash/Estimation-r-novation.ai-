@@ -777,17 +777,11 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
               </div>
             )}
 
-            <div className="space-y-4">
-              <h4 className="font-semibold">Répartition des coûts</h4>
-              {costEstimation.breakdown.map((item: any, index: number) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="font-medium">{item.category}</span>
-                  <div className="text-right">
-                    <div className="font-semibold">{item.cost.toLocaleString('fr-CA', { style: 'currency', currency: 'CAD' })}</div>
-                    <div className="text-sm text-muted-foreground">{item.percentage}%</div>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center p-6 bg-muted/20 rounded-lg">
+              <p className="text-sm text-muted-foreground mb-2">Estimation basée sur les tarifs québécois 2025</p>
+              <p className="text-xs text-muted-foreground">
+                Cette fourchette inclut matériaux, main-d'œuvre et frais généraux
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
