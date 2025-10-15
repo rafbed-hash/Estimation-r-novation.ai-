@@ -13,8 +13,8 @@ Cette application permet aux clients de visualiser leur projet de rénovation gr
 6. **Résultats IA** - Visualisations et estimation des coûts
 
 ### Intégrations IA
-- **Google AI Gemini 2.0** - Transformation visuelle des photos
-- **OpenAI GPT-4** - Estimation intelligente des coûts
+- **Nano Banana (Gemini 2.5 Flash Image)** - Génération d'images et visualisations 3D
+- **Gemini 2.5 Flash** - Analyse intelligente des photos et estimation des coûts
 - **Make.com** - Automatisation et envoi des leads
 
 ## 🛠️ Configuration
@@ -28,11 +28,11 @@ cp env.example .env.local
 ```
 
 ```env
-# Google AI Gemini 2.0 API
-GOOGLE_AI_API_KEY=your_google_ai_api_key_here
+# Nano Banana (Gemini 2.5 Flash Image) API
+GOOGLE_AI_API_KEY=your_nano_banana_api_key_here
 
-# OpenAI API pour l'estimation des coûts
-OPENAI_API_KEY=your_openai_api_key_here
+# Gemini 2.5 Flash pour l'analyse et estimation
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # Make.com Webhook URL
 NEXT_PUBLIC_MAKE_WEBHOOK_URL=https://hook.make.com/your-webhook-url-here
@@ -43,17 +43,16 @@ MAKE_API_KEY=your_make_api_key_here
 
 ### 2. Obtenir les clés API
 
-#### Google AI Gemini 2.0
+#### Nano Banana (Gemini 2.5 Flash Image)
 1. Allez sur [Google AI Studio](https://aistudio.google.com/)
 2. Créez un nouveau projet ou sélectionnez un projet existant
-3. Activez l'API Gemini 2.0
+3. Activez l'API Gemini 2.5 Flash Image (Nano Banana)
 4. Créez une clé API et copiez-la dans `GOOGLE_AI_API_KEY`
 
-#### OpenAI
-1. Allez sur [OpenAI Platform](https://platform.openai.com/)
-2. Créez un compte ou connectez-vous
-3. Allez dans API Keys et créez une nouvelle clé
-4. Copiez la clé dans `OPENAI_API_KEY`
+#### Gemini 2.5 Flash
+1. Utilisez la même clé API que Nano Banana
+2. Assurez-vous que l'API Gemini 2.5 Flash est activée
+3. Copiez la clé dans `GEMINI_API_KEY` si différente
 
 #### Make.com
 1. Créez un compte sur [Make.com](https://make.com/)
@@ -93,8 +92,8 @@ components/
     └── results-display.tsx         # Affichage des résultats
 lib/
 └── services/
-    ├── google-ai.ts                # Service Google AI Gemini
-    ├── openai-cost-estimation.ts   # Service OpenAI
+    ├── nano-banana.ts              # Service Nano Banana (Gemini 2.5 Flash Image)
+    ├── gemini-analysis.ts          # Service Gemini 2.5 Flash
     └── make-webhook.ts             # Service Make.com
 ```
 
@@ -178,13 +177,13 @@ Le webhook Make.com reçoit ces données :
 - Vérifiez que toutes les variables d'environnement sont définies dans `.env.local`
 - Redémarrez le serveur après modification des variables
 
-### Erreur Google AI
+### Erreur Nano Banana
 - Vérifiez que la clé API est valide
-- Assurez-vous que l'API Gemini 2.0 est activée
+- Assurez-vous que l'API Gemini 2.5 Flash Image est activée
 - Vérifiez les quotas et limites de votre compte
 
-### Erreur OpenAI
-- Vérifiez que vous avez des crédits sur votre compte OpenAI
+### Erreur Gemini 2.5 Flash
+- Vérifiez que vous avez accès à l'API Gemini 2.5 Flash
 - Assurez-vous que la clé API a les bonnes permissions
 
 ### Erreur Make.com

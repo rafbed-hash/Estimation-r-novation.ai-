@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Data validation passed')
 
     // Initialisation des services avec Nano Banana (Gemini 2.5 Flash)
-    const nanoBananaKey = process.env.NANO_BANANA_API_KEY || process.env.GOOGLE_AI_STUDIO_API_KEY
+    const nanoBananaKey = process.env.GOOGLE_AI_API_KEY || process.env.NANO_BANANA_API_KEY || process.env.GOOGLE_AI_STUDIO_API_KEY
     const openAIKey = process.env.OPENAI_API_KEY
 
     console.log('🔑 API Keys check:')
@@ -42,21 +42,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!openAIKey) {
-      console.log('❌ Missing API keys - OpenAI:', !!openAIKey)
-      return NextResponse.json(
-        { 
-          error: 'Clé API OpenAI manquante pour l\'estimation des coûts',
-          details: {
-            openAI: !!openAIKey,
-            nanoBanana: !!nanoBananaKey
-          }
-        },
-        { status: 500 }
-      )
+      console.log('⚠️ Missing OpenAI key - will use fallback cost estimation')
     }
 
     const nanoBananaAI = new GoogleAIStudioService(nanoBananaKey)
-    const openAI = new OpenAICostEstimationService(openAIKey)
+    const openAI = openAIKey ? new OpenAICostEstimationService(openAIKey) : null
 
     // Étape 1: Transformation d'images avec Nano Banana (Gemini 2.5 Flash)
     console.log('🍌 Calling Nano Banana for image transformation...')
@@ -150,14 +140,18 @@ export async function POST(request: NextRequest) {
     
     let costEstimation
     try {
-      costEstimation = await openAI.estimateCosts({
-        client: body.client,
-        house: body.house,
-        selectedRooms: body.project.selectedRooms,
-        selectedStyle: body.project.selectedStyle,
-        aiAnalysis: JSON.stringify(aiResults)
-      })
-      console.log('✅ OpenAI cost estimation completed:', costEstimation.totalCost)
+      if (openAI) {
+        costEstimation = await openAI.estimateCosts({
+          client: body.client,
+          house: body.house,
+          selectedRooms: body.project.selectedRooms,
+          selectedStyle: body.project.selectedStyle,
+          aiAnalysis: JSON.stringify(aiResults)
+        })
+        console.log('✅ OpenAI cost estimation completed:', costEstimation.totalCost)
+      } else {
+        throw new Error('OpenAI service not available')
+      }
     } catch (error) {
       console.error('❌ OpenAI failed, using fallback:', error)
       // Fallback pour l'estimation des coûts
