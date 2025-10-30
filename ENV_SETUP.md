@@ -8,13 +8,13 @@ Ajoutez ces variables d'environnement dans votre dashboard Vercel :
 
 ```bash
 # Google AI Studio (Gemini) - OBLIGATOIRE pour l'analyse IA
-GOOGLE_AI_API_KEY=votre_cle_google_ai_studio
+GOOGLE_AI_API_KEY=AIzaSyArSkLsN8PpGfI7NyHkI9h51Xes7C2cQWE
 
 # Google Places API - pour l'autocomplétion d'adresse
 NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=votre_cle_google_places
 
 # Pexels API - pour les photos d'inspiration
-PEXELS_API_KEY=votre_cle_pexels
+PEXELS_API_KEY=wIMkIaAdZL2cMHUfxS43ruruZ0Afrx5dVsP78zpQGzB8m1nHeCzL8FMv
 
 # Make.com - pour l'envoi des leads
 NEXT_PUBLIC_MAKE_WEBHOOK_URL=votre_webhook_make
