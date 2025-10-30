@@ -7,9 +7,3 @@
 
 [build.environment]
   NEXT_PRIVATE_TARGET = "server"
-
-# Redirects for Next.js app
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

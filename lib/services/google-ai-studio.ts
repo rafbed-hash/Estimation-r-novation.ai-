@@ -60,61 +60,76 @@ class GoogleAIStudioService {
         }
       }
 
-      // Appel à l'API Google Gemini 2.0 Flash officielle
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.config.model}:generateContent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-goog-api-key': this.config.apiKey
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt
-                },
-                {
-                  inline_data: {
-                    mime_type: "image/jpeg",
-                    data: this.extractBase64FromPhoto(request.originalPhoto)
+      // Appel à l'API Google Gemini 2.5 Flash avec timeout pour Vercel
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 25000) // 25s timeout pour Vercel
+      
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.config.model}:generateContent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-goog-api-key': this.config.apiKey
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: prompt
+                  },
+                  {
+                    inline_data: {
+                      mime_type: "image/jpeg",
+                      data: this.extractBase64FromPhoto(request.originalPhoto)
+                    }
                   }
-                }
-              ]
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 2048, // Reduced for faster response
             }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 4096,
-          }
+          }),
+          signal: controller.signal
         })
-      })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('❌ Google AI Studio API Error:', response.status, response.statusText, errorText)
+          throw new Error(`Erreur API Google AI Studio: ${response.status} - ${errorText}`)
+        }
+        
+        const result = await response.json()
+        const processingTime = Date.now() - startTime
 
-      if (!response.ok) {
-        console.error('❌ Google AI Studio API Error:', response.status, response.statusText)
-        throw new Error(`Erreur API Google AI Studio: ${response.status}`)
-      }
-
-      const result = await response.json()
-      const processingTime = Date.now() - startTime
-
-      console.log('✅ Google AI Studio transformation completed in', processingTime, 'ms')
-
-      // Traiter la réponse de Google AI Studio (Gemini)
-      const analysisText = result.candidates?.[0]?.content?.parts?.[0]?.text || 'Analyse non disponible'
-      
-      console.log('📝 Google AI Studio analysis:', analysisText)
-      
-      // Pour l'instant, retourner l'image originale avec la description d'analyse
-      // L'image sera transformée par Banana AI dans l'API route
-      return {
-        originalPhoto: request.originalPhoto,
-        transformedPhoto: request.originalPhoto, // Sera remplacé par Banana AI
-        description: analysisText.substring(0, 500) + '...', // Plus de détails de l'analyse
-        confidence: 85,
-        processingTime: processingTime
+        console.log('✅ Google AI Studio transformation completed in', processingTime, 'ms')
+        
+        // Traiter la réponse de Google AI Studio (Gemini)
+        const analysisText = result.candidates?.[0]?.content?.parts?.[0]?.text || 'Analyse non disponible'
+        
+        console.log('📝 Google AI Studio analysis:', analysisText)
+        
+        // Pour l'instant, retourner l'image originale avec la description d'analyse
+        return {
+          originalPhoto: request.originalPhoto,
+          transformedPhoto: request.originalPhoto, // Sera remplacé par l'analyse IA
+          description: analysisText.substring(0, 500) + '...', // Plus de détails de l'analyse
+          confidence: 85,
+          processingTime: processingTime
+        }
+        
+      } catch (error) {
+        clearTimeout(timeoutId)
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw new Error('Timeout: L\'analyse IA a pris trop de temps. Veuillez réessayer.')
+        }
+        throw error
       }
 
     } catch (error) {
@@ -168,26 +183,32 @@ Soyez précis et professionnel dans votre analyse.
   }
 
   private extractBase64FromPhoto(photo: string): string {
+    console.log('🔍 Extracting base64 from photo:', photo.substring(0, 50) + '...')
+    
     // Si c'est déjà en base64, extraire la partie après la virgule
     if (photo.startsWith('data:image/')) {
       const base64Data = photo.split(',')[1]
       if (!base64Data) {
+        console.error('❌ Invalid base64 format: missing data after comma')
         throw new Error('Invalid base64 format: missing data after comma')
       }
+      console.log('✅ Extracted base64 data length:', base64Data.length)
       return base64Data
     }
     
     // Si c'est une URL d'objet ou autre format non supporté
     if (photo.startsWith('blob:') || photo.startsWith('http')) {
-      console.warn('⚠️ Photo URL detected, Gemini needs base64:', photo.substring(0, 50) + '...')
+      console.error('❌ Photo URL detected, Gemini needs base64:', photo.substring(0, 50) + '...')
       throw new Error('Photo must be in base64 format for Gemini API. Please convert blob URLs to base64.')
     }
     
     // Si c'est déjà du base64 pur (sans préfixe data:image/)
     if (photo.length > 100 && /^[A-Za-z0-9+/=]+$/.test(photo)) {
+      console.log('✅ Pure base64 detected, length:', photo.length)
       return photo
     }
     
+    console.error('❌ Unsupported photo format. Expected base64 data, got:', photo.substring(0, 50) + '...')
     throw new Error(`Unsupported photo format. Expected base64 data, got: ${photo.substring(0, 50)}...`)
   }
 

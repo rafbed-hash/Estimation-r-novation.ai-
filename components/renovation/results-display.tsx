@@ -308,18 +308,28 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
           Découvrez la transformation de votre espace et l'estimation détaillée des coûts.
         </p>
         
-        {/* Debug info - temporaire */}
-        <div className="bg-green-100 border border-green-400 rounded p-4 text-left text-sm">
-          <strong>✅ Debug Info:</strong><br/>
-          Photos reçues: {data.photos?.length || 0}<br/>
-          Photos converties: {processedPhotos.length}<br/>
-          Photos prêtes pour affichage: {processedPhotos.length > 0 ? '✅' : '❌'}<br/>
-          AI Results: {aiResults ? 'Présent' : 'Absent'}
+        {/* Status info for production debugging */}
+        <div className="bg-blue-50 border border-blue-200 rounded p-4 text-left text-sm">
+          <div className="flex items-center space-x-2 mb-2">
+            <CheckCircle className="h-4 w-4 text-blue-600" />
+            <strong className="text-blue-800">Statut du traitement</strong>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <span className="text-blue-600">Photos reçues:</span> <span className="font-medium">{data.photos?.length || 0}</span><br/>
+              <span className="text-blue-600">Photos traitées:</span> <span className="font-medium">{processedPhotos.length}</span><br/>
+            </div>
+            <div>
+              <span className="text-blue-600">Analyse IA:</span> <span className="font-medium">{aiResults ? '✅ Complète' : '⏳ En cours'}</span><br/>
+              <span className="text-blue-600">Estimation coûts:</span> <span className="font-medium">{costEstimation ? '✅ Disponible' : '⏳ En cours'}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Résultats IA */}
       {aiResults && (
+// ... (rest of the code remains the same)
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">

@@ -6,6 +6,11 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
+  "functions": {
+    "app/api/renovation/process/route.ts": {
+      "maxDuration": 30
+    }
+  },
   "env": {
     "GOOGLE_AI_API_KEY": "@google-ai-api-key",
     "PEXELS_API_KEY": "@pexels-api-key",

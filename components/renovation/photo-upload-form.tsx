@@ -4,7 +4,8 @@ import { useState, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Upload, X, Camera, AlertCircle } from "lucide-react"
+import { Upload, X, Camera, AlertCircle, Loader2 } from "lucide-react"
+import { ImageCompressor } from "@/lib/utils/image-compression"
 
 interface PhotoUploadFormProps {
   data: any
@@ -24,16 +25,20 @@ export function PhotoUploadForm({ data, onUpdate, onNext }: PhotoUploadFormProps
   const [photos, setPhotos] = useState<PhotoFile[]>(data.photos || [])
   const [dragActive, setDragActive] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isCompressing, setIsCompressing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const maxFiles = 10
   const maxFileSize = 10 * 1024 * 1024 // 10MB
   const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
-  const handleFiles = (files: FileList) => {
+  const handleFiles = async (files: FileList) => {
+    setIsCompressing(true)
     const newPhotos: PhotoFile[] = []
     const currentCount = photos.length
+    const filesToProcess: File[] = []
 
+    // First pass: validate files
     for (let i = 0; i < files.length && currentCount + newPhotos.length < maxFiles; i++) {
       const file = files[i]
 
@@ -43,26 +48,46 @@ export function PhotoUploadForm({ data, onUpdate, onNext }: PhotoUploadFormProps
         continue
       }
 
-      // Validate file size
+      // Validate file size (before compression)
       if (file.size > maxFileSize) {
-        setErrors(prev => ({ ...prev, fileSize: `Fichier trop volumineux: ${file.name}` }))
-        continue
+        console.log(`📸 Large file detected: ${file.name} (${ImageCompressor.formatFileSize(file.size)}) - will compress`)
       }
 
-      const photoFile: PhotoFile = {
-        id: `${Date.now()}-${i}`,
-        file,
-        preview: URL.createObjectURL(file),
-        name: file.name,
-        size: file.size
-      }
-
-      newPhotos.push(photoFile)
+      filesToProcess.push(file)
     }
 
-    if (newPhotos.length > 0) {
-      setPhotos(prev => [...prev, ...newPhotos])
-      setErrors({}) // Clear errors on successful upload
+    try {
+      // Compress images for better performance
+      console.log('🗜️ Compressing images for optimal performance...')
+      const compressedFiles = await ImageCompressor.compressMultipleImages(filesToProcess, {
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 0.85,
+        maxSizeMB: 2
+      })
+
+      // Create PhotoFile objects from compressed files
+      compressedFiles.forEach((file, i) => {
+        const photoFile: PhotoFile = {
+          id: `${Date.now()}-${i}`,
+          file,
+          preview: URL.createObjectURL(file),
+          name: file.name,
+          size: file.size
+        }
+        newPhotos.push(photoFile)
+      })
+
+      if (newPhotos.length > 0) {
+        setPhotos(prev => [...prev, ...newPhotos])
+        setErrors({}) // Clear errors on successful upload
+        console.log(`✅ Successfully processed ${newPhotos.length} photos`)
+      }
+    } catch (error) {
+      console.error('❌ Error processing images:', error)
+      setErrors(prev => ({ ...prev, compression: 'Erreur lors du traitement des images' }))
+    } finally {
+      setIsCompressing(false)
     }
   }
 
@@ -127,25 +152,53 @@ export function PhotoUploadForm({ data, onUpdate, onNext }: PhotoUploadFormProps
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = error => reject(error)
+      reader.onload = () => {
+        const result = reader.result as string
+        console.log(`✅ Photo converted to base64: ${file.name} (${result.length} chars)`)
+        resolve(result)
+      }
+      reader.onerror = error => {
+        console.error(`❌ Error converting ${file.name} to base64:`, error)
+        reject(error)
+      }
     })
   }
 
   const handleSubmit = async () => {
     if (validateForm()) {
-      // Convert photos to base64 for API
-      const base64Photos = await Promise.all(
-        photos.map(async (photo) => {
-          try {
-            return await convertToBase64(photo.file)
-          } catch (error) {
-            console.error('Error converting photo to base64:', error)
-            return photo.preview // Fallback to blob URL
-          }
-        })
-      )
+      console.log('📸 Converting photos to base64...', photos.length, 'photos')
       
+      // Convert photos to base64 for API with better error handling
+      const base64Photos = []
+      
+      for (let i = 0; i < photos.length; i++) {
+        const photo = photos[i]
+        try {
+          console.log(`📸 Converting photo ${i + 1}/${photos.length}: ${photo.name}`)
+          const base64 = await convertToBase64(photo.file)
+          
+          // Validate base64 format
+          if (!base64.startsWith('data:image/')) {
+            throw new Error('Invalid base64 format')
+          }
+          
+          base64Photos.push(base64)
+          console.log(`✅ Photo ${i + 1} converted successfully`)
+          
+        } catch (error) {
+          console.error(`❌ Failed to convert photo ${i + 1}:`, error)
+          // Skip this photo instead of using blob URL
+          alert(`Erreur lors du traitement de la photo "${photo.name}". Elle sera ignorée.`)
+          continue
+        }
+      }
+      
+      if (base64Photos.length === 0) {
+        alert('Aucune photo n\'a pu être traitée. Veuillez réessayer.')
+        return
+      }
+      
+      console.log(`✅ Successfully converted ${base64Photos.length}/${photos.length} photos`)
       onUpdate({ photos: base64Photos })
       onNext()
     }
@@ -166,11 +219,18 @@ export function PhotoUploadForm({ data, onUpdate, onNext }: PhotoUploadFormProps
         </p>
       </div>
 
-      {photos.length > 0 && (
+      {(photos.length > 0 || isCompressing) && (
         <div className="text-center">
-          <Badge className="bg-primary text-primary-foreground">
-            {photos.length} photo{photos.length > 1 ? 's' : ''} téléchargée{photos.length > 1 ? 's' : ''}
-          </Badge>
+          {isCompressing ? (
+            <Badge className="bg-blue-500 text-white flex items-center space-x-2 mx-auto w-fit">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Optimisation des images...</span>
+            </Badge>
+          ) : (
+            <Badge className="bg-primary text-primary-foreground">
+              {photos.length} photo{photos.length > 1 ? 's' : ''} téléchargée{photos.length > 1 ? 's' : ''}
+            </Badge>
+          )}
         </div>
       )}
 
