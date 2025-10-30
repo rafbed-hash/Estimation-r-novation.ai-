@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Data validation passed')
 
     // Initialisation des services avec Google AI Studio (Gemini)
-    const googleAIKey = process.env.GOOGLE_AI_API_KEY
+    const googleAIKey = process.env.GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_STUDIO_KEY
     const openAIKey = process.env.OPENAI_API_KEY
 
     console.log('🔑 API Keys check:')
