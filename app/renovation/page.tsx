@@ -11,12 +11,15 @@ import {
   RoomSelectionForm,
   PhotoUploadForm,
   StyleSelectionForm,
-  ResultsDisplay
+  ResultsDisplay,
+  ProjectTypeSelection,
+  TechnicalQualificationForm
 } from "../../components/renovation"
 
 export default function RenovationPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
+    projectType: null,
     client: {},
     house: {},
     rooms: [],
@@ -26,14 +29,32 @@ export default function RenovationPage() {
     costEstimation: null
   })
 
-  const steps = [
-    { id: 1, title: "Informations Client", icon: Home, component: ClientInfoForm },
-    { id: 2, title: "Informations Maison", icon: Home, component: HouseInfoForm },
-    { id: 3, title: "Sélection des Pièces", icon: Home, component: RoomSelectionForm },
-    { id: 4, title: "Photos de la Pièce", icon: Upload, component: PhotoUploadForm },
-    { id: 5, title: "Choix du Style", icon: Palette, component: StyleSelectionForm },
-    { id: 6, title: "Résultats", icon: Calculator, component: ResultsDisplay }
-  ]
+  // Étapes dynamiques selon le type de projet
+  const getSteps = () => {
+    const baseSteps = [
+      { id: 1, title: "Type de Projet", icon: Home, component: ProjectTypeSelection },
+      { id: 2, title: "Informations Client", icon: Home, component: ClientInfoForm },
+      { id: 3, title: "Informations Maison", icon: Home, component: HouseInfoForm }
+    ]
+
+    if (formData.projectType === 'renovation') {
+      return [
+        ...baseSteps,
+        { id: 4, title: "Sélection des Pièces", icon: Home, component: RoomSelectionForm },
+        { id: 5, title: "Photos de la Pièce", icon: Upload, component: PhotoUploadForm },
+        { id: 6, title: "Choix du Style", icon: Palette, component: StyleSelectionForm },
+        { id: 7, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+      ]
+    } else {
+      return [
+        ...baseSteps,
+        { id: 4, title: "Diagnostic Technique", icon: Upload, component: TechnicalQualificationForm },
+        { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+      ]
+    }
+  }
+
+  const steps = getSteps()
 
   const handleNext = () => {
     if (currentStep < steps.length) {

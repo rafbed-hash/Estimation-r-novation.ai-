@@ -41,13 +41,13 @@ export default function HomePage() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <Badge className="bg-primary text-primary-foreground border-primary hover:bg-primary/90">
-                  🤖 Intelligence Artificielle + Expertise Québécoise
+                  🍁 Intelligence Artificielle + Expertise Québécoise
                 </Badge>
                 <h1 className="text-4xl lg:text-6xl font-bold text-balance leading-tight">
                   Visualisez votre <span className="text-primary">rénovation de rêve</span> avec l'IA en 60 secondes
                 </h1>
                 <p className="text-xl text-muted-foreground text-pretty leading-relaxed">
-                  Notre IA génère des visualisations 3D photoréalistes et calcule automatiquement les coûts de rénovation selon le marché québécois 2025.
+                  Notre IA génère des visualisations 3D photoréalistes et calcule automatiquement les coûts de rénovation selon le marché québécois 2025. Conforme aux normes du Québec.
                 </p>
               </div>
 
@@ -148,7 +148,7 @@ export default function HomePage() {
               {
                 icon: Zap,
                 title: "Estimation Automatique",
-                description: "Calcul instantané des coûts selon les tarifs québécois 2025",
+                description: "Calcul instantané des coûts en $ CAD selon les tarifs québécois 2025",
                 image: "/elegant-living-room-interior-design.jpg",
               },
               {
@@ -338,9 +338,9 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold mb-4">Contact</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li>01 23 45 67 89</li>
+                <li>(514) 123-4567</li>
                 <li>contact@estimation-renovation.ai</li>
-                <li>Québec, Canada</li>
+                <li>Montréal, Québec, Canada</li>
               </ul>
             </div>
           </div>

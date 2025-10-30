@@ -13,6 +13,7 @@
   },
   "env": {
     "GOOGLE_AI_API_KEY": "@google-ai-api-key",
+    "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY": "@google-places-api-key",
     "PEXELS_API_KEY": "@pexels-api-key",
     "NEXT_PUBLIC_MAKE_WEBHOOK_URL": "@make-webhook-url",
     "MAKE_API_KEY": "@make-api-key"
@@ -20,6 +21,7 @@
   "build": {
     "env": {
       "GOOGLE_AI_API_KEY": "@google-ai-api-key",
+      "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY": "@google-places-api-key",
       "PEXELS_API_KEY": "@pexels-api-key",
       "NEXT_PUBLIC_MAKE_WEBHOOK_URL": "@make-webhook-url",
       "MAKE_API_KEY": "@make-api-key"

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Mail, Phone, MapPin } from "lucide-react"
+import { GooglePlacesAutocomplete } from './google-places-autocomplete'
 
 interface ClientInfoFormProps {
   data: any
@@ -19,7 +20,10 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
     phone: data.client?.phone || '',
     address: data.client?.address || '',
     city: data.client?.city || '',
-    postalCode: data.client?.postalCode || ''
+    postalCode: data.client?.postalCode || '',
+    budget: data.client?.budget || '',
+    urgency: data.client?.urgency || '',
+    bestCallTime: data.client?.bestCallTime || ''
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -30,6 +34,30 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
+  }
+
+  const handlePlaceSelected = (place: {
+    address: string
+    city: string
+    postalCode: string
+    country: string
+  }) => {
+    // Remplir automatiquement les champs avec les données Google
+    setFormData(prev => ({
+      ...prev,
+      address: place.address,
+      city: place.city,
+      postalCode: place.postalCode
+    }))
+    
+    // Effacer les erreurs des champs remplis automatiquement
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      delete newErrors.address
+      delete newErrors.city
+      delete newErrors.postalCode
+      return newErrors
+    })
   }
 
   const validateForm = () => {
@@ -165,25 +193,14 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
           )}
         </div>
 
-        <div className="md:col-span-2 space-y-2">
-          <label className="text-sm font-medium text-foreground">
-            Adresse *
-          </label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
-              className={`w-full pl-11 pr-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
-                errors.address ? 'border-red-500' : 'border-border'
-              }`}
-              placeholder="123 Rue de la Paix"
-            />
-          </div>
-          {errors.address && (
-            <p className="text-sm text-red-500">{errors.address}</p>
-          )}
+        <div className="md:col-span-2">
+          <GooglePlacesAutocomplete
+            value={formData.address}
+            onChange={(value) => handleInputChange('address', value)}
+            onPlaceSelected={handlePlaceSelected}
+            error={errors.address}
+            placeholder="123 Rue de la Paix, Paris..."
+          />
         </div>
 
         <div className="space-y-2">
@@ -220,6 +237,58 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
           {errors.postalCode && (
             <p className="text-sm text-red-500">{errors.postalCode}</p>
           )}
+        </div>
+
+        {/* Champs de qualification pour les leads */}
+        <div className="md:col-span-2 space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Budget envisagé
+          </label>
+          <select
+            value={formData.budget}
+            onChange={(e) => handleInputChange('budget', e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all border-border"
+          >
+            <option value="">Sélectionnez votre budget</option>
+            <option value="moins-20k">Moins de 20 000$ CAD</option>
+            <option value="20k-40k">20 000$ - 40 000$ CAD</option>
+            <option value="40k-70k">40 000$ - 70 000$ CAD</option>
+            <option value="70k-plus">Plus de 70 000$ CAD</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Urgence du projet
+          </label>
+          <select
+            value={formData.urgency}
+            onChange={(e) => handleInputChange('urgency', e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all border-border"
+          >
+            <option value="">Quand souhaitez-vous commencer ?</option>
+            <option value="asap">Dès que possible</option>
+            <option value="1-3-months">Dans 1-3 mois</option>
+            <option value="3-6-months">Dans 3-6 mois</option>
+            <option value="later">Plus tard</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Meilleur moment pour vous appeler
+          </label>
+          <select
+            value={formData.bestCallTime}
+            onChange={(e) => handleInputChange('bestCallTime', e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all border-border"
+          >
+            <option value="">Choisissez un créneau</option>
+            <option value="morning">Matin (9h-12h)</option>
+            <option value="afternoon">Après-midi (14h-17h)</option>
+            <option value="evening">Soir (18h-20h)</option>
+            <option value="anytime">N'importe quand</option>
+          </select>
         </div>
       </div>
 

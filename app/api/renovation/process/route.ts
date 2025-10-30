@@ -19,38 +19,29 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Data validation passed')
 
-    // Initialisation des services avec Nano Banana (Gemini 2.5 Flash)
-    const nanoBananaKey = process.env.GOOGLE_AI_API_KEY || process.env.NANO_BANANA_API_KEY || process.env.GOOGLE_AI_STUDIO_API_KEY
+    // Initialisation des services avec Google AI Studio (Gemini)
+    const googleAIKey = process.env.GOOGLE_AI_API_KEY
     const openAIKey = process.env.OPENAI_API_KEY
 
     console.log('🔑 API Keys check:')
-    console.log('- Nano Banana (Gemini 2.5 Flash):', !!nanoBananaKey)
+    console.log('- Google AI Studio:', !!googleAIKey)
     console.log('- OpenAI:', !!openAIKey)
 
-    if (!nanoBananaKey) {
-      console.log('❌ Missing Nano Banana API key')
-      return NextResponse.json(
-        { 
-          error: 'Clé API Nano Banana manquante. Veuillez configurer NANO_BANANA_API_KEY dans vos variables d\'environnement.',
-          details: {
-            openAI: !!openAIKey,
-            nanoBanana: !!nanoBananaKey
-          }
-        },
-        { status: 500 }
-      )
+    // Pour le développement, utiliser des résultats simulés si pas de clé API
+    if (!googleAIKey) {
+      console.log('⚠️ Missing Google AI API key - using fallback results')
     }
 
     if (!openAIKey) {
       console.log('⚠️ Missing OpenAI key - will use fallback cost estimation')
     }
 
-    const nanoBananaAI = new GoogleAIStudioService(nanoBananaKey)
+    const googleAI = googleAIKey ? new GoogleAIStudioService(googleAIKey) : null
     const openAI = openAIKey ? new OpenAICostEstimationService(openAIKey) : null
 
-    // Étape 1: Transformation d'images avec Nano Banana (Gemini 2.5 Flash)
-    console.log('🍌 Calling Nano Banana for image transformation...')
-    console.log('🔑 Nano Banana Key available:', !!nanoBananaKey)
+    // Étape 1: Transformation d'images avec Google AI Studio (Gemini)
+    console.log('🤖 Calling Google AI Studio for image transformation...')
+    console.log('🔑 Google AI Key available:', !!googleAIKey)
     console.log('📸 Photos received:', body.project.photos?.length || 0)
     console.log('🎨 Selected style:', body.project.selectedStyle)
     console.log('🏠 Selected rooms:', body.project.selectedRooms)
@@ -64,24 +55,38 @@ export async function POST(request: NextRequest) {
         throw new Error('Aucune photo fournie pour la transformation')
       }
       
-      console.log('🍌 Analyzing image with Nano Banana (Gemini 2.5 Flash)...')
+      console.log('🤖 Analyzing image with Google AI Studio (Gemini)...')
       
       // Récupérer les dimensions de la première pièce sélectionnée
       const firstRoom = body.project.selectedRooms[0] || 'salle-de-bain'
       
       console.log('📏 Room type:', firstRoom)
       
-      const transformationResult = await nanoBananaAI.transformImage({
-        originalPhoto: mainPhoto,
-        roomType: firstRoom,
-        selectedStyle: body.project.selectedStyle,
-        customPrompt: body.project.customPrompt,
-        inspirationPhoto: body.project.inspirationPhoto
-      })
+      let transformationResult
       
-      console.log('✅ Nano Banana analysis completed')
-      console.log('📊 Analysis confidence:', transformationResult.confidence)
-      console.log('📝 Analysis description:', transformationResult.description.substring(0, 100) + '...')
+      if (googleAI) {
+        transformationResult = await googleAI.transformImage({
+          originalPhoto: mainPhoto,
+          roomType: firstRoom,
+          selectedStyle: body.project.selectedStyle,
+          customPrompt: body.project.customPrompt,
+          inspirationPhoto: body.project.inspirationPhoto
+        })
+        
+        console.log('✅ Google AI analysis completed')
+        console.log('📊 Analysis confidence:', transformationResult.confidence)
+        console.log('📝 Analysis description:', transformationResult.description.substring(0, 100) + '...')
+      } else {
+        // Résultats simulés si pas de clé API
+        transformationResult = {
+          originalPhoto: mainPhoto,
+          transformedPhoto: mainPhoto,
+          description: 'Analyse simulée - Veuillez configurer votre clé API Google AI Studio pour une analyse complète.',
+          confidence: 75,
+          processingTime: 1000
+        }
+        console.log('⚠️ Using simulated results - no API key configured')
+      }
       
       aiResults = {
         originalPhotos: [mainPhoto],
