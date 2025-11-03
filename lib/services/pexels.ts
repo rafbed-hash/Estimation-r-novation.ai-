@@ -128,11 +128,13 @@ class PexelsService {
     const roomTranslations: Record<string, string> = {
       'cuisine': 'kitchen',
       'salle-de-bain': 'bathroom',
+      'salle-bain': 'bathroom', // Ajout pour correspondre au formulaire
       'salon': 'living room',
       'chambre-principale': 'master bedroom',
       'chambre': 'bedroom',
       'salle-a-manger': 'dining room',
       'bureau': 'home office',
+      'sous-sol': 'basement',
       'salle-de-bain-secondaire': 'powder room',
       'entree': 'entryway',
       'garage': 'garage'

@@ -94,12 +94,14 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
       for (const room of formData.selectedRooms) {
         const roomNames = {
           'cuisine': 'cuisine',
-          'salle-bain': 'salle-de-bain', 
+          'salle-bain': 'salle-bain', // Garder salle-bain pour correspondre au service
           'chambre': 'chambre',
           'salon': 'salon',
           'bureau': 'bureau',
           'sous-sol': 'sous-sol'
         }
+        
+        console.log(`Fetching photos for room: ${room} -> ${roomNames[room as keyof typeof roomNames]}`)
         
         const roomType = roomNames[room as keyof typeof roomNames] || room
         
@@ -172,10 +174,46 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      onUpdate({ project: formData })
-      onNext()
+      // Lancer la transformation IA
+      try {
+        setLoadingInspiration(true)
+        
+        const transformationResponse = await fetch('/api/transformation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            photos: formData.currentPhotos,
+            selectedRooms: formData.selectedRooms,
+            selectedStyle: formData.selectedStyle,
+            transformationGoals: formData.transformationGoals
+          })
+        })
+        
+        if (transformationResponse.ok) {
+          const transformationData = await transformationResponse.json()
+          console.log('Transformation réussie:', transformationData)
+          
+          onUpdate({ 
+            project: formData,
+            aiResults: transformationData
+          })
+          onNext()
+        } else {
+          console.error('Erreur transformation:', transformationResponse.status)
+          // Continuer quand même
+          onUpdate({ project: formData })
+          onNext()
+        }
+      } catch (error) {
+        console.error('Erreur lors de la transformation:', error)
+        // Continuer quand même
+        onUpdate({ project: formData })
+        onNext()
+      } finally {
+        setLoadingInspiration(false)
+      }
     }
   }
 
