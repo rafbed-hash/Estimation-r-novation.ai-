@@ -28,8 +28,29 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  const formatPhoneNumber = (value: string) => {
+    // Supprimer tous les caractères non numériques
+    const numbers = value.replace(/\D/g, '')
+    
+    // Formater selon le pattern québécois (XXX) XXX-XXXX
+    if (numbers.length <= 3) {
+      return numbers
+    } else if (numbers.length <= 6) {
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`
+    } else {
+      return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`
+    }
+  }
+
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    let processedValue = value
+    
+    // Formater automatiquement le numéro de téléphone
+    if (field === 'phone') {
+      processedValue = formatPhoneNumber(value)
+    }
+    
+    setFormData(prev => ({ ...prev, [field]: processedValue }))
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
@@ -185,7 +206,7 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
               className={`w-full pl-11 pr-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
                 errors.phone ? 'border-red-500' : 'border-border'
               }`}
-              placeholder="01 23 45 67 89"
+              placeholder="514-123-4567"
             />
           </div>
           {errors.phone && (
@@ -199,7 +220,7 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
             onChange={(value) => handleInputChange('address', value)}
             onPlaceSelected={handlePlaceSelected}
             error={errors.address}
-            placeholder="123 Rue de la Paix, Paris..."
+            placeholder="123 Rue Saint-Denis, Montréal, QC"
           />
         </div>
 
@@ -214,7 +235,7 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
             className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
               errors.city ? 'border-red-500' : 'border-border'
             }`}
-            placeholder="Paris"
+            placeholder="Montréal"
           />
           {errors.city && (
             <p className="text-sm text-red-500">{errors.city}</p>
@@ -232,7 +253,7 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
             className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
               errors.postalCode ? 'border-red-500' : 'border-border'
             }`}
-            placeholder="75001"
+            placeholder="H1A 1A1"
           />
           {errors.postalCode && (
             <p className="text-sm text-red-500">{errors.postalCode}</p>
@@ -250,10 +271,10 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
             className="w-full px-4 py-3 border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all border-border"
           >
             <option value="">Sélectionnez votre budget</option>
-            <option value="moins-20k">Moins de 20 000$ CAD</option>
-            <option value="20k-40k">20 000$ - 40 000$ CAD</option>
-            <option value="40k-70k">40 000$ - 70 000$ CAD</option>
-            <option value="70k-plus">Plus de 70 000$ CAD</option>
+            <option value="moins-25k">Moins de 25 000$ CAD</option>
+            <option value="25k-50k">25 000$ - 50 000$ CAD</option>
+            <option value="50k-100k">50 000$ - 100 000$ CAD</option>
+            <option value="100k-plus">Plus de 100 000$ CAD</option>
           </select>
         </div>
 

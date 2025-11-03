@@ -67,7 +67,13 @@ export function GooglePlacesAutocomplete({
       {
         types: ['address'],
         componentRestrictions: { country: 'CA' }, // Limiter au Canada
-        fields: ['address_components', 'formatted_address', 'geometry']
+        fields: ['address_components', 'formatted_address', 'geometry'],
+        // Préférer les résultats du Québec
+        bounds: new window.google.maps.LatLngBounds(
+          new window.google.maps.LatLng(45.0, -79.0), // Sud-Ouest du Québec
+          new window.google.maps.LatLng(62.0, -57.0)  // Nord-Est du Québec
+        ),
+        strictBounds: false
       }
     )
 
@@ -95,7 +101,11 @@ export function GooglePlacesAutocomplete({
         address += component.long_name + ' '
       }
       
-      if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+      if (types.includes('locality')) {
+        city = component.long_name
+      } else if (types.includes('administrative_area_level_1') && component.short_name === 'QC') {
+        // S'assurer qu'on est bien au Québec
+      } else if (types.includes('administrative_area_level_2') && !city) {
         city = component.long_name
       }
       
@@ -159,7 +169,7 @@ export function GooglePlacesAutocomplete({
         <p className="text-sm text-red-500">{error}</p>
       )}
       <p className="text-xs text-muted-foreground">
-        📍 Commencez à taper votre adresse pour voir les suggestions
+        🇨🇦 Tapez votre adresse québécoise pour l'autocomplétion
       </p>
     </div>
   )
