@@ -88,46 +88,55 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
 
     setLoadingInspiration(true)
     try {
-      // Construire la requête pour Pexels basée sur le style et les pièces sélectionnées
-      const roomQueries = formData.selectedRooms.map((room: string) => {
+      const allPhotos: any[] = []
+      
+      // Pour chaque pièce sélectionnée, récupérer des photos spécifiques
+      for (const room of formData.selectedRooms) {
         const roomNames = {
-          'cuisine': 'kitchen',
-          'salle-bain': 'bathroom',
-          'chambre': 'bedroom',
-          'salon': 'living room',
-          'bureau': 'office',
-          'sous-sol': 'basement'
+          'cuisine': 'cuisine',
+          'salle-bain': 'salle-de-bain', 
+          'chambre': 'chambre',
+          'salon': 'salon',
+          'bureau': 'bureau',
+          'sous-sol': 'sous-sol'
         }
-        return `${style} ${roomNames[room as keyof typeof roomNames] || room}`
-      })
-
-      const response = await fetch('/api/inspiration/photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          queries: roomQueries,
-          style: style,
-          count: 8
-        })
-      })
-
-      if (response.ok) {
-        const photos = await response.json()
-        console.log('Photos reçues:', photos)
-        setFormData(prev => ({
-          ...prev,
-          inspirationPhotos: Array.isArray(photos) ? photos : []
-        }))
-      } else {
-        console.error('Erreur API photos:', response.status)
-        // Utiliser des photos de fallback
-        setFormData(prev => ({
-          ...prev,
-          inspirationPhotos: []
-        }))
+        
+        const roomType = roomNames[room as keyof typeof roomNames] || room
+        
+        // Utiliser l'API GET avec des paramètres
+        const url = `/api/inspiration/photos?roomType=${encodeURIComponent(roomType)}&style=${encodeURIComponent(style)}&count=3`
+        const roomResponse = await fetch(url)
+        
+        if (roomResponse.ok) {
+          const roomData = await roomResponse.json()
+          console.log(`Photos pour ${room} (${roomType}):`, roomData.photos)
+          
+          // Ajouter les photos avec le nom de la pièce
+          const photosWithRoom = roomData.photos.map((photo: any) => ({
+            ...photo,
+            roomName: room,
+            roomType: roomType
+          }))
+          
+          allPhotos.push(...photosWithRoom)
+        }
+        
+        // Petit délai entre les requêtes
+        await new Promise(resolve => setTimeout(resolve, 200))
       }
+
+      console.log('Toutes les photos reçues:', allPhotos)
+      setFormData(prev => ({
+        ...prev,
+        inspirationPhotos: allPhotos
+      }))
+      
     } catch (error) {
       console.error('Erreur lors du chargement des photos d\'inspiration:', error)
+      setFormData(prev => ({
+        ...prev,
+        inspirationPhotos: []
+      }))
     }
     setLoadingInspiration(false)
   }
@@ -320,7 +329,7 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
 
         {/* Photos d'inspiration générées */}
         {formData.inspirationPhotos.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Eye className="h-5 w-5 text-primary" />
               <label className="text-sm font-medium text-foreground">
@@ -330,20 +339,48 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
             <p className="text-sm text-muted-foreground">
               Inspirations {formData.selectedStyle} pour vos pièces sélectionnées
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {formData.inspirationPhotos.map((photo: any, index: number) => (
-                <div key={index} className="relative">
-                  <img
-                    src={photo.src?.medium || photo.url}
-                    alt={photo.alt || `Inspiration ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg border"
-                  />
-                  <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                    {photo.photographer || 'Pexels'}
+            
+            {/* Grouper les photos par pièce */}
+            {formData.selectedRooms.map((room: string) => {
+              const roomPhotos = formData.inspirationPhotos.filter((photo: any) => photo.roomName === room)
+              if (roomPhotos.length === 0) return null
+              
+              const roomLabels = {
+                'cuisine': 'Cuisine',
+                'salle-bain': 'Salle de bain',
+                'chambre': 'Chambre à coucher',
+                'salon': 'Salon',
+                'bureau': 'Bureau',
+                'sous-sol': 'Sous-sol'
+              }
+              
+              return (
+                <div key={room} className="space-y-2">
+                  <h4 className="font-medium text-foreground flex items-center space-x-2">
+                    <span className="w-3 h-3 bg-primary rounded-full"></span>
+                    <span>{roomLabels[room as keyof typeof roomLabels] || room}</span>
+                    <span className="text-xs text-muted-foreground">({roomPhotos.length} inspirations)</span>
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {roomPhotos.map((photo: any, index: number) => (
+                      <div key={`${room}-${index}`} className="relative group">
+                        <img
+                          src={photo.src?.medium || photo.url}
+                          alt={photo.alt || `${room} inspiration ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                          {photo.photographer || 'Pexels'}
+                        </div>
+                        <div className="absolute top-1 right-1 bg-primary/80 text-white text-xs px-1.5 py-0.5 rounded">
+                          {formData.selectedStyle}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              )
+            })}
           </div>
         )}
 
