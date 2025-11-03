@@ -15,10 +15,22 @@ import {
   ProjectTypeSelection,
   TechnicalQualificationForm
 } from "../../components/renovation"
+import { PlumbingElectricalForm } from "../../components/renovation/plumbing-electrical-form"
+import { HeatPumpForm } from "../../components/renovation/heat-pump-form"
+import { RoomTransformationForm } from "../../components/renovation/room-transformation-form"
 
 export default function RenovationPage() {
   const [currentStep, setCurrentStep] = useState(1)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    projectType: string | null,
+    client: any,
+    house: any,
+    rooms: any[],
+    photos: any[],
+    selectedStyle: string | null,
+    aiResults: any,
+    costEstimation: any
+  }>({
     projectType: null,
     client: {},
     house: {},
@@ -37,20 +49,43 @@ export default function RenovationPage() {
       { id: 3, title: "Informations Maison", icon: Home, component: HouseInfoForm }
     ]
 
-    if (formData.projectType === 'renovation') {
-      return [
-        ...baseSteps,
-        { id: 4, title: "Sélection des Pièces", icon: Home, component: RoomSelectionForm },
-        { id: 5, title: "Photos de la Pièce", icon: Upload, component: PhotoUploadForm },
-        { id: 6, title: "Choix du Style", icon: Palette, component: StyleSelectionForm },
-        { id: 7, title: "Résultats", icon: Calculator, component: ResultsDisplay }
-      ]
-    } else {
-      return [
-        ...baseSteps,
-        { id: 4, title: "Diagnostic Technique", icon: Upload, component: TechnicalQualificationForm },
-        { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
-      ]
+    // Formulaires spécialisés selon le type de projet
+    switch (formData.projectType) {
+      case 'transformation':
+        return [
+          ...baseSteps,
+          { id: 4, title: "Transformation de Pièces", icon: Palette, component: RoomTransformationForm },
+          { id: 5, title: "Résultats IA", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      case 'plomberie':
+        return [
+          ...baseSteps,
+          { id: 4, title: "Problème de Plomberie", icon: Upload, component: (props: any) => <PlumbingElectricalForm {...props} projectType="plomberie" /> },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      case 'electricite':
+        return [
+          ...baseSteps,
+          { id: 4, title: "Problème Électrique", icon: Upload, component: (props: any) => <PlumbingElectricalForm {...props} projectType="electricite" /> },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      case 'thermopompe':
+        return [
+          ...baseSteps,
+          { id: 4, title: "Installation Thermopompe", icon: Upload, component: HeatPumpForm },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      default:
+        // Formulaire générique pour autres types
+        return [
+          ...baseSteps,
+          { id: 4, title: "Diagnostic Technique", icon: Upload, component: TechnicalQualificationForm },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
     }
   }
 

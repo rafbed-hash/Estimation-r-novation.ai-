@@ -191,7 +191,7 @@ export function GooglePlacesAutocomplete({
         <p className="text-sm text-red-500">{error}</p>
       )}
       <p className="text-xs text-muted-foreground">
-        {isLoaded ? '🇨🇦 Tapez votre adresse québécoise pour l\'autocomplétion' : '🔄 Chargement de l\'autocomplétion...'}
+        {isLoaded ? '🇨🇦 Commencez à taper pour voir les suggestions d\'adresses' : '🔄 Chargement de l\'autocomplétion Google...'}
       </p>
     </div>
   )
