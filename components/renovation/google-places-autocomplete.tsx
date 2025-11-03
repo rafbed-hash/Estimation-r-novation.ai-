@@ -39,15 +39,25 @@ export function GooglePlacesAutocomplete({
     if (!window.google) {
       loadGooglePlacesScript()
     } else {
-      initializeAutocomplete()
+      // Délai pour s'assurer que l'input est monté
+      setTimeout(() => {
+        initializeAutocomplete()
+      }, 100)
     }
   }, [])
 
   const loadGooglePlacesScript = () => {
+    // Vérifier si le script existe déjà
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+      return
+    }
+
     // Créer une fonction globale pour l'initialisation
     window.initGooglePlaces = () => {
-      setIsLoaded(true)
-      initializeAutocomplete()
+      console.log('Google Places API loaded')
+      setTimeout(() => {
+        initializeAutocomplete()
+      }, 200)
     }
 
     // Charger le script Google Places
@@ -55,30 +65,42 @@ export function GooglePlacesAutocomplete({
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&libraries=places&callback=initGooglePlaces`
     script.async = true
     script.defer = true
+    script.onerror = () => {
+      console.error('Failed to load Google Places API')
+    }
     document.head.appendChild(script)
   }
 
   const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google) return
+    if (!inputRef.current || !window.google?.maps?.places) {
+      console.log('Google Places API not ready yet')
+      return
+    }
 
-    // Créer l'instance d'autocomplétion
-    autocompleteRef.current = new window.google.maps.places.Autocomplete(
-      inputRef.current,
-      {
-        types: ['address'],
-        componentRestrictions: { country: 'CA' }, // Limiter au Canada
-        fields: ['address_components', 'formatted_address', 'geometry'],
-        // Préférer les résultats du Québec
-        bounds: new window.google.maps.LatLngBounds(
-          new window.google.maps.LatLng(45.0, -79.0), // Sud-Ouest du Québec
-          new window.google.maps.LatLng(62.0, -57.0)  // Nord-Est du Québec
-        ),
-        strictBounds: false
-      }
-    )
+    try {
+      // Créer l'instance d'autocomplétion
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        inputRef.current,
+        {
+          types: ['address'],
+          componentRestrictions: { country: 'CA' }, // Limiter au Canada
+          fields: ['address_components', 'formatted_address', 'geometry'],
+          // Préférer les résultats du Québec
+          bounds: new window.google.maps.LatLngBounds(
+            new window.google.maps.LatLng(45.0, -79.0), // Sud-Ouest du Québec
+            new window.google.maps.LatLng(62.0, -57.0)  // Nord-Est du Québec
+          ),
+          strictBounds: false
+        }
+      )
 
-    // Écouter la sélection d'une adresse
-    autocompleteRef.current.addListener('place_changed', handlePlaceSelect)
+      // Écouter la sélection d'une adresse
+      autocompleteRef.current.addListener('place_changed', handlePlaceSelect)
+      setIsLoaded(true)
+      console.log('Google Places Autocomplete initialized successfully')
+    } catch (error) {
+      console.error('Error initializing Google Places:', error)
+    }
   }
 
   const handlePlaceSelect = () => {
@@ -159,7 +181,7 @@ export function GooglePlacesAutocomplete({
           }`}
           placeholder={placeholder}
         />
-        {!isLoaded && window.google === undefined && (
+        {!isLoaded && (
           <div className="absolute right-3 top-3">
             <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
           </div>
@@ -169,7 +191,7 @@ export function GooglePlacesAutocomplete({
         <p className="text-sm text-red-500">{error}</p>
       )}
       <p className="text-xs text-muted-foreground">
-        🇨🇦 Tapez votre adresse québécoise pour l'autocomplétion
+        {isLoaded ? '🇨🇦 Tapez votre adresse québécoise pour l\'autocomplétion' : '🔄 Chargement de l\'autocomplétion...'}
       </p>
     </div>
   )

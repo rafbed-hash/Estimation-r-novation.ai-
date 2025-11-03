@@ -7,3 +7,4 @@ export { ResultsDisplaySimple as ResultsDisplay } from './results-display-simple
 export { ProjectTypeSelection } from './project-type-selection'
 export { TechnicalQualificationForm } from './technical-qualification-form'
 export { DimensionFields } from './dimension-fields'
+export { SimpleAddressForm } from './simple-address-form'
