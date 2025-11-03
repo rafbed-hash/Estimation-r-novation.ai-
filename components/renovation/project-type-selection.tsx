@@ -26,12 +26,12 @@ export function ProjectTypeSelection({ data, onUpdate, onNext }: ProjectTypeSele
 
   const projectTypes = [
     {
-      id: 'renovation',
-      name: 'Rénovation Complète',
-      description: 'Transformation d\'espaces avec design et IA',
+      id: 'transformation',
+      name: 'Transformation de Pièces',
+      description: 'Rénovation cuisine, salle de bain, chambre avec IA',
       icon: Home,
       color: 'bg-blue-500',
-      features: ['Design IA', 'Visualisation 3D', 'Estimation détaillée'],
+      features: ['Sélection pièces', 'Inspirations Pexels', 'Transformation IA'],
       leadValue: 'Standard'
     },
     {
