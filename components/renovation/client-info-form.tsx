@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Mail, Phone, MapPin } from "lucide-react"
-import { GooglePlacesAutocomplete } from './google-places-autocomplete'
+import { SmartAddressForm } from './smart-address-form'
+// import { GooglePlacesAutocomplete } from './google-places-autocomplete'
 // import { SimpleAddressForm } from './simple-address-form'
 
 interface ClientInfoFormProps {
@@ -216,49 +217,20 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
         </div>
 
         <div className="md:col-span-2">
-          <GooglePlacesAutocomplete
-            value={formData.address}
-            onChange={(value) => handleInputChange('address', value)}
+          <SmartAddressForm
+            address={formData.address}
+            city={formData.city}
+            postalCode={formData.postalCode}
+            onAddressChange={(value) => handleInputChange('address', value)}
+            onCityChange={(value) => handleInputChange('city', value)}
+            onPostalCodeChange={(value) => handleInputChange('postalCode', value)}
             onPlaceSelected={handlePlaceSelected}
-            error={errors.address}
-            placeholder="123 Rue Saint-Denis, Montréal, QC"
+            errors={{
+              address: errors.address,
+              city: errors.city,
+              postalCode: errors.postalCode
+            }}
           />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">
-            Ville *
-          </label>
-          <input
-            type="text"
-            value={formData.city}
-            onChange={(e) => handleInputChange('city', e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
-              errors.city ? 'border-red-500' : 'border-border'
-            }`}
-            placeholder="Montréal"
-          />
-          {errors.city && (
-            <p className="text-sm text-red-500">{errors.city}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">
-            Code postal *
-          </label>
-          <input
-            type="text"
-            value={formData.postalCode}
-            onChange={(e) => handleInputChange('postalCode', e.target.value)}
-            className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
-              errors.postalCode ? 'border-red-500' : 'border-border'
-            }`}
-            placeholder="H1A 1A1"
-          />
-          {errors.postalCode && (
-            <p className="text-sm text-red-500">{errors.postalCode}</p>
-          )}
         </div>
 
         {/* Section budget supprimée selon demande utilisateur */}

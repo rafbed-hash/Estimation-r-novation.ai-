@@ -73,7 +73,11 @@ export function GooglePlacesAutocomplete({
 
   const initializeAutocomplete = () => {
     if (!inputRef.current || !window.google?.maps?.places) {
-      console.log('Google Places API not ready yet')
+      console.log('Google Places API not ready yet, retrying in 1 second...')
+      // Retry after 1 second
+      setTimeout(() => {
+        initializeAutocomplete()
+      }, 1000)
       return
     }
 
@@ -100,6 +104,7 @@ export function GooglePlacesAutocomplete({
       console.log('Google Places Autocomplete initialized successfully')
     } catch (error) {
       console.error('Error initializing Google Places:', error)
+      setIsLoaded(false)
     }
   }
 
