@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Mail, Phone, MapPin } from "lucide-react"
-import { SmartAddressForm } from './smart-address-form'
+import { SimpleAddressForm } from './simple-address-form'
+// import { SmartAddressForm } from './smart-address-form'
 // import { GooglePlacesAutocomplete } from './google-places-autocomplete'
-// import { SimpleAddressForm } from './simple-address-form'
 
 interface ClientInfoFormProps {
   data: any
@@ -217,14 +217,13 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
         </div>
 
         <div className="md:col-span-2">
-          <SmartAddressForm
+          <SimpleAddressForm
             address={formData.address}
             city={formData.city}
             postalCode={formData.postalCode}
             onAddressChange={(value) => handleInputChange('address', value)}
             onCityChange={(value) => handleInputChange('city', value)}
             onPostalCodeChange={(value) => handleInputChange('postalCode', value)}
-            onPlaceSelected={handlePlaceSelected}
             errors={{
               address: errors.address,
               city: errors.city,
