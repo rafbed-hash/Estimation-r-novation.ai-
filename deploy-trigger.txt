@@ -1,1 +1,1 @@
-Déploiement forcé - 30 octobre 2025 - Version québécoise
+Déploiement forcé - 3 novembre 2025 - Test synchronisation Vercel

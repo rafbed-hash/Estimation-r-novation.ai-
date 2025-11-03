@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Home, Calendar, Building, Building2 } from "lucide-react"
+import { DimensionFields } from "./dimension-fields"
 
 interface HouseInfoFormProps {
   data: any
@@ -19,7 +20,8 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
     propertyType: data.house?.propertyType || '',
     surface: data.house?.surface || '',
     rooms: data.house?.rooms || '',
-    floors: data.house?.floors || ''
+    floors: data.house?.floors || '',
+    pieces: data.house?.pieces || [{ nom: '', longueur: '', largeur: '', hauteur: 8 }]
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -36,6 +38,20 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
     }
+  }
+
+  const handlePiecesChange = (pieces: any[]) => {
+    setFormData(prev => ({ ...prev, pieces }))
+    // Clear pieces-related errors
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      Object.keys(newErrors).forEach(key => {
+        if (key.startsWith('pieces.')) {
+          delete newErrors[key]
+        }
+      })
+      return newErrors
+    })
   }
 
   const validateForm = () => {
@@ -62,6 +78,23 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
       newErrors.rooms = 'Le nombre de pièces est requis'
     } else if (parseInt(formData.rooms) <= 0) {
       newErrors.rooms = 'Le nombre de pièces doit être supérieur à 0'
+    }
+
+    // Validation des pièces avec dimensions
+    if (!formData.pieces || formData.pieces.length === 0) {
+      newErrors['pieces.general'] = 'Au moins une pièce avec dimensions est requise'
+    } else {
+      formData.pieces.forEach((piece: any, index: number) => {
+        if (!piece.nom || piece.nom.trim() === '') {
+          newErrors[`pieces.${index}.nom`] = 'Le nom de la pièce est requis'
+        }
+        if (!piece.longueur || parseFloat(piece.longueur) <= 0) {
+          newErrors[`pieces.${index}.longueur`] = 'La longueur doit être supérieure à 0'
+        }
+        if (!piece.largeur || parseFloat(piece.largeur) <= 0) {
+          newErrors[`pieces.${index}.largeur`] = 'La largeur doit être supérieure à 0'
+        }
+      })
     }
 
     setErrors(newErrors)
@@ -195,6 +228,18 @@ export function HouseInfoForm({ data, onUpdate, onNext }: HouseInfoFormProps) {
             placeholder="2"
             min="1"
           />
+        </div>
+
+        {/* Dimensions des pièces */}
+        <div className="space-y-4">
+          <DimensionFields
+            pieces={formData.pieces}
+            onChange={handlePiecesChange}
+            errors={errors}
+          />
+          {errors['pieces.general'] && (
+            <p className="text-sm text-red-500">{errors['pieces.general']}</p>
+          )}
         </div>
       </div>
 
