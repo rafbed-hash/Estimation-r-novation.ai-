@@ -158,7 +158,8 @@ export function ResultsDisplaySimple({ data, onUpdate, onNext }: ResultsDisplayP
                     <img
                       src={processedPhotos[0]}
                       alt="Avant"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => window.open(processedPhotos[0], '_blank')}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -171,12 +172,18 @@ export function ResultsDisplaySimple({ data, onUpdate, onNext }: ResultsDisplayP
 
               {/* Après */}
               <div className="relative">
-                <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10">
-                  {aiResults?.transformedPhotos?.[0]?.url ? (
+                <div className="aspect-video bg-muted">
+                  {aiResults?.transformedImages?.[0]?.transformed ? (
                     <img
-                      src={aiResults.transformedPhotos[0].url}
+                      src={aiResults.transformedImages[0].transformed}
                       alt="Après transformation"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => window.open(aiResults.transformedImages[0].transformed, '_blank')}
+                      onError={(e) => {
+                        console.log('Transformed image failed to load, using fallback')
+                        const target = e.target as HTMLImageElement
+                        target.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

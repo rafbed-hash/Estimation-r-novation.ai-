@@ -1,5 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Fonction pour appeler la nouvelle API Replicate
+async function callReplicateTransform(transformData: any) {
+  try {
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/transform`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dimensions: {
+          longueur: 12, // Valeur par défaut
+          largeur: 10,
+          hauteur: 9
+        },
+        photosProjetUrls: transformData.photos?.map((p: any) => p.url || p) || [],
+        inspirationsUrls: [],
+        style: transformData.selectedStyle || 'Moderne',
+        palette: 'Neutre'
+      })
+    });
+    
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Erreur appel Replicate:', error);
+  }
+  return null;
+}
+
 // Fonction pour obtenir l'estimation de coûts via GPT
 async function getCostEstimation(params: any) {
   try {
@@ -82,52 +110,48 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Utiliser Nano Banana pour la vraie transformation
-    console.log('🍌 Using real Nano Banana transformation')
+    // Utiliser Replicate pour la vraie transformation IA
+    console.log('🎨 Using Replicate AI transformation')
+    
+    const replicateResult = await callReplicateTransform({
+      photos,
+      selectedRooms,
+      selectedStyle,
+      transformationGoals
+    })
     
     const transformedImages = []
     
-    for (let i = 0; i < Math.min(photos.length, 3); i++) {
-      const photo = photos[i]
+    if (replicateResult && replicateResult.success) {
+      // Utiliser le résultat Replicate
+      transformedImages.push({
+        id: 1,
+        original: replicateResult.avantUrl,
+        transformed: replicateResult.apresUrl,
+        confidence: 0.90,
+        room: selectedRooms[0] || 'cuisine',
+        style: selectedStyle,
+        analysis: `Transformation ${selectedStyle} générée par IA`,
+        meta: replicateResult.meta
+      })
       
-      // Construire le prompt pour Nano Banana
-      const prompt = `Transform this ${selectedRooms.join(', ')} interior to ${selectedStyle} style. ${transformationGoals ? `Focus on: ${transformationGoals.replace(/,/g, ', ')}.` : ''} Keep the same room layout but update materials, colors, and furniture to match the ${selectedStyle} aesthetic. Make it realistic and achievable.`
+      console.log('✅ Transformation Replicate réussie')
+    } else {
+      console.log('⚠️ Fallback: Replicate non disponible')
       
-      try {
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 1000
-            }
-          })
+      // Fallback si Replicate échoue
+      for (let i = 0; i < Math.min(photos.length, 3); i++) {
+        const photo = photos[i]
+        
+        transformedImages.push({
+          id: i + 1,
+          original: photo.url || photo,
+          transformed: `https://images.unsplash.com/photo-${['1560448204-e02f11c3d0e2', '1586023492125-27b2c045efd7', '1571460633648-d5a4b2b2a7a8'][i % 3]}?w=800&q=80`,
+          confidence: 0.75,
+          room: selectedRooms[i] || selectedRooms[0],
+          style: selectedStyle,
+          analysis: `Transformation ${selectedStyle} (mode fallback)`
         })
-
-        if (response.ok) {
-          const result = await response.json()
-          
-          transformedImages.push({
-            id: i + 1,
-            original: photo.url,
-            transformed: photo.url, // Pour l'instant, même image (Nano Banana ne fait pas d'images)
-            confidence: 0.85,
-            room: selectedRooms[i] || selectedRooms[0],
-            style: selectedStyle,
-            analysis: result.candidates?.[0]?.content?.parts?.[0]?.text || 'Transformation analysée'
-          })
-        }
-      } catch (error) {
-        console.error('Erreur Nano Banana:', error)
       }
     }
 

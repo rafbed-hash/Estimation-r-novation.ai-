@@ -506,17 +506,36 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {roomPhotos.map((photo: any, index: number) => (
-                      <div key={`${room}-${index}`} className="relative group">
+                      <div 
+                        key={`${room}-${index}`} 
+                        className="relative group cursor-pointer"
+                        onClick={() => {
+                          // Ouvrir l'image en grand dans un nouvel onglet
+                          window.open(photo.src?.medium || photo.url, '_blank')
+                        }}
+                      >
                         <img
                           src={photo.src?.medium || photo.url}
                           alt={photo.alt || `${room} inspiration ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border transition-transform group-hover:scale-105"
+                          className="w-full h-24 object-cover rounded-lg border transition-all group-hover:scale-105 group-hover:shadow-lg"
+                          onError={(e) => {
+                            console.log('Image failed to load:', photo.src?.medium || photo.url)
+                            // Fallback vers une autre image
+                            const target = e.target as HTMLImageElement
+                            target.src = `https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80`
+                          }}
                         />
                         <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
-                          {photo.photographer || 'Pexels'}
+                          {photo.photographer || 'Unsplash'}
                         </div>
                         <div className="absolute top-1 right-1 bg-primary/80 text-white text-xs px-1.5 py-0.5 rounded">
                           {formData.selectedStyle}
+                        </div>
+                        {/* Indicateur cliquable */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                          <div className="bg-white/90 text-black text-xs px-2 py-1 rounded">
+                            🔍 Cliquer pour agrandir
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -544,17 +563,26 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
                   'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400',
                   'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=400'
                 ].map((url, index) => (
-                  <div key={index} className="relative group">
+                  <div 
+                    key={index} 
+                    className="relative group cursor-pointer"
+                    onClick={() => window.open(url, '_blank')}
+                  >
                     <img
                       src={url}
                       alt={`Inspiration ${formData.selectedStyle} ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg border transition-transform group-hover:scale-105"
+                      className="w-full h-24 object-cover rounded-lg border transition-all group-hover:scale-105 group-hover:shadow-lg"
                     />
                     <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
                       Unsplash
                     </div>
                     <div className="absolute top-1 right-1 bg-primary/80 text-white text-xs px-1.5 py-0.5 rounded">
                       {formData.selectedStyle}
+                    </div>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                      <div className="bg-white/90 text-black text-xs px-2 py-1 rounded">
+                        🔍 Cliquer pour agrandir
+                      </div>
                     </div>
                   </div>
                 ))}
