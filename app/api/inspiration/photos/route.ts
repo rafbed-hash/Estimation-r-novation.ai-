@@ -42,39 +42,84 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Route pour récupérer toutes les photos de styles pour une pièce
+// Route pour récupérer des photos d'inspiration basées sur des requêtes multiples
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { roomType } = body
+    const { queries, style, count = 8 } = body
 
-    console.log(`🖼️ API /inspiration/photos POST called for all styles of ${roomType}`)
+    console.log(`🖼️ API /inspiration/photos POST called with queries:`, queries)
 
-    const pexelsKey = process.env.PEXELS_API_KEY || 'fallback_key'
+    const pexelsKey = process.env.PEXELS_API_KEY
+    
+    if (!pexelsKey) {
+      console.log('⚠️ Pexels API key not found, using fallback photos')
+      // Retourner des photos de fallback
+      const fallbackPhotos = [
+        {
+          id: 1,
+          src: { medium: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400' },
+          alt: `${style} kitchen inspiration`,
+          photographer: 'Unsplash'
+        },
+        {
+          id: 2,
+          src: { medium: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400' },
+          alt: `${style} bathroom inspiration`,
+          photographer: 'Unsplash'
+        },
+        {
+          id: 3,
+          src: { medium: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400' },
+          alt: `${style} bedroom inspiration`,
+          photographer: 'Unsplash'
+        },
+        {
+          id: 4,
+          src: { medium: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400' },
+          alt: `${style} living room inspiration`,
+          photographer: 'Unsplash'
+        }
+      ]
+      
+      return NextResponse.json(fallbackPhotos.slice(0, count))
+    }
 
-    console.log('🔑 Pexels API key status (POST):', pexelsKey ? 'Available' : 'Using fallback')
+    console.log('🔑 Pexels API key found, fetching real photos')
 
     const pexels = new PexelsService(pexelsKey)
+    const allPhotos = []
 
-    // Récupérer toutes les photos de styles pour cette pièce
-    const allStylePhotos = await pexels.getAllStylePhotos(roomType)
+    // Pour chaque requête, récupérer des photos
+    for (const query of queries) {
+      try {
+        // Extraire le type de pièce et le style de la requête
+        const parts = query.split(' ')
+        const roomType = parts[parts.length - 1] // dernier mot (kitchen, bathroom, etc.)
+        const photos = await pexels.getInspirationPhotos(roomType, style, 2) // 2 photos par requête
+        allPhotos.push(...photos)
+      } catch (error) {
+        console.error(`Error fetching photos for query: ${query}`, error)
+      }
+    }
 
-    console.log(`✅ Retrieved photos for all styles of ${roomType}`)
+    console.log(`✅ Retrieved ${allPhotos.length} inspiration photos`)
 
-    return NextResponse.json({
-      success: true,
-      roomType,
-      stylePhotos: allStylePhotos
-    })
+    return NextResponse.json(allPhotos.slice(0, count))
 
   } catch (error) {
     console.error('❌ Erreur dans l\'API inspiration/photos POST:', error)
-    return NextResponse.json(
-      { 
-        error: 'Erreur lors de la récupération des photos de styles',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    )
+    
+    // Fallback en cas d'erreur
+    const fallbackPhotos = [
+      {
+        id: 1,
+        src: { medium: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400' },
+        alt: 'Kitchen inspiration',
+        photographer: 'Unsplash'
+      }
+    ]
+    
+    return NextResponse.json(fallbackPhotos)
   }
 }

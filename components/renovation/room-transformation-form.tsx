@@ -113,9 +113,17 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
 
       if (response.ok) {
         const photos = await response.json()
+        console.log('Photos reçues:', photos)
         setFormData(prev => ({
           ...prev,
-          inspirationPhotos: photos
+          inspirationPhotos: Array.isArray(photos) ? photos : []
+        }))
+      } else {
+        console.error('Erreur API photos:', response.status)
+        // Utiliser des photos de fallback
+        setFormData(prev => ({
+          ...prev,
+          inspirationPhotos: []
         }))
       }
     } catch (error) {
