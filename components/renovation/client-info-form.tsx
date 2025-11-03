@@ -7,6 +7,7 @@ import { User, Mail, Phone, MapPin } from "lucide-react"
 import { SimpleAddressForm } from './simple-address-form'
 // import { SmartAddressForm } from './smart-address-form'
 // import { GooglePlacesAutocomplete } from './google-places-autocomplete'
+// Utilisation du formulaire simple en attendant la configuration Google Places
 
 interface ClientInfoFormProps {
   data: any

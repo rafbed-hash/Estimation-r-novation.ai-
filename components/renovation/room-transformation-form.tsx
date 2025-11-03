@@ -391,18 +391,49 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
           </div>
         )}
 
-        {/* Objectifs de transformation */}
-        <div className="space-y-2">
+        {/* Objectifs de transformation - Sélection simple */}
+        <div className="space-y-3">
           <label className="text-sm font-medium text-foreground">
-            Objectifs de transformation (optionnel)
+            Objectifs principaux (optionnel)
           </label>
-          <textarea
-            value={formData.transformationGoals}
-            onChange={(e) => handleInputChange('transformationGoals', e.target.value)}
-            className="w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all border-border"
-            placeholder="Ex: Agrandir visuellement l'espace, créer plus de rangement, moderniser le look..."
-            rows={3}
-          />
+          <p className="text-sm text-muted-foreground">
+            Sélectionnez vos priorités (plusieurs choix possibles)
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { id: 'agrandir', label: 'Agrandir visuellement', icon: '📏' },
+              { id: 'rangement', label: 'Plus de rangement', icon: '📦' },
+              { id: 'moderniser', label: 'Moderniser le style', icon: '✨' },
+              { id: 'luminosite', label: 'Plus de luminosité', icon: '💡' },
+              { id: 'fonctionnel', label: 'Plus fonctionnel', icon: '🔧' },
+              { id: 'confort', label: 'Plus confortable', icon: '😌' }
+            ].map((goal) => (
+              <Card
+                key={goal.id}
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  formData.transformationGoals?.includes(goal.id)
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => {
+                  const currentGoals = formData.transformationGoals?.split(',').filter(Boolean) || []
+                  const newGoals = currentGoals.includes(goal.id)
+                    ? currentGoals.filter((g: string) => g !== goal.id)
+                    : [...currentGoals, goal.id]
+                  handleInputChange('transformationGoals', newGoals.join(','))
+                }}
+              >
+                <CardContent className="p-3 text-center">
+                  <div className="text-xl mb-1">{goal.icon}</div>
+                  <p className={`text-xs font-medium ${
+                    formData.transformationGoals?.includes(goal.id) ? 'text-primary' : 'text-foreground'
+                  }`}>
+                    {goal.label}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 
