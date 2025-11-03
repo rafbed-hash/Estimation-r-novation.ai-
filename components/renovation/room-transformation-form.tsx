@@ -104,7 +104,7 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
         const roomType = roomNames[room as keyof typeof roomNames] || room
         
         // Utiliser l'API GET avec des paramètres
-        const url = `/api/inspiration/photos?roomType=${encodeURIComponent(roomType)}&style=${encodeURIComponent(style)}&count=3`
+        const url = `/api/inspiration/photos?roomType=${encodeURIComponent(roomType)}&style=${encodeURIComponent(style)}&count=6`
         const roomResponse = await fetch(url)
         
         if (roomResponse.ok) {
