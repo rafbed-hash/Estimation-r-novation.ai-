@@ -49,9 +49,13 @@ export default function RenovationPage() {
       { id: 3, title: "Informations Maison", icon: Home, component: HouseInfoForm }
     ]
 
+    // Debug pour voir le type de projet
+    console.log('Current project type:', formData.projectType)
+
     // Formulaires spécialisés selon le type de projet
     switch (formData.projectType) {
       case 'transformation':
+        console.log('Using transformation form')
         return [
           ...baseSteps,
           { id: 4, title: "Transformation de Pièces", icon: Palette, component: RoomTransformationForm },
@@ -59,6 +63,7 @@ export default function RenovationPage() {
         ]
       
       case 'plomberie':
+        console.log('Using plomberie form')
         return [
           ...baseSteps,
           { id: 4, title: "Problème de Plomberie", icon: Upload, component: (props: any) => <PlumbingElectricalForm {...props} projectType="plomberie" /> },
@@ -66,6 +71,7 @@ export default function RenovationPage() {
         ]
       
       case 'electricite':
+        console.log('Using electricite form')
         return [
           ...baseSteps,
           { id: 4, title: "Problème Électrique", icon: Upload, component: (props: any) => <PlumbingElectricalForm {...props} projectType="electricite" /> },
@@ -73,6 +79,7 @@ export default function RenovationPage() {
         ]
       
       case 'thermopompe':
+        console.log('Using thermopompe form')
         return [
           ...baseSteps,
           { id: 4, title: "Installation Thermopompe", icon: Upload, component: HeatPumpForm },
@@ -80,11 +87,20 @@ export default function RenovationPage() {
         ]
       
       default:
-        // Formulaire générique pour autres types
+        console.log('Using default form for type:', formData.projectType)
+        // Si aucun type sélectionné, utiliser transformation par défaut
+        if (!formData.projectType) {
+          return [
+            ...baseSteps,
+            { id: 4, title: "Sélection du Type", icon: Upload, component: ProjectTypeSelection },
+            { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+          ]
+        }
+        // Fallback vers transformation
         return [
           ...baseSteps,
-          { id: 4, title: "Diagnostic Technique", icon: Upload, component: TechnicalQualificationForm },
-          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+          { id: 4, title: "Transformation de Pièces", icon: Palette, component: RoomTransformationForm },
+          { id: 5, title: "Résultats IA", icon: Calculator, component: ResultsDisplay }
         ]
     }
   }
@@ -126,9 +142,31 @@ export default function RenovationPage() {
               Rénovation IA
             </a>
           </nav>
-          <Button variant="outline" onClick={() => window.location.href = '/'}>
-            Retour à l'accueil
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                setFormData({
+                  projectType: null,
+                  client: {},
+                  house: {},
+                  rooms: [],
+                  photos: [],
+                  selectedStyle: null,
+                  aiResults: null,
+                  costEstimation: null
+                })
+                setCurrentStep(1)
+                console.log('Form reset')
+              }}
+            >
+              🔄 Reset
+            </Button>
+            <Button variant="outline" onClick={() => window.location.href = '/'}>
+              Retour à l'accueil
+            </Button>
+          </div>
         </div>
       </header>
 
