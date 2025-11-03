@@ -206,13 +206,16 @@ export function ResultsDisplaySimple({ data, onUpdate, onNext }: ResultsDisplayP
             <h2 className="text-2xl font-bold mb-6">Estimation du coût</h2>
             
             <div className="text-4xl font-bold text-primary mb-2">
-              {costEstimation?.totalCost?.min?.toLocaleString() || '20 000'} $ CAD
+              {(costEstimation?.totalMin || costEstimation?.totalCost?.min || 20000).toLocaleString()} $ CAD
               <span className="text-2xl text-muted-foreground mx-4">à</span>
-              {costEstimation?.totalCost?.max?.toLocaleString() || '45 000'} $ CAD
+              {(costEstimation?.totalMax || costEstimation?.totalCost?.max || 45000).toLocaleString()} $ CAD
             </div>
             
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-2">
               Estimation pour votre projet de rénovation
+            </p>
+            <p className="text-xs text-muted-foreground">
+              🇨🇦 Prix basés sur les tarifs québécois actuels (taxes incluses)
             </p>
           </CardContent>
         </Card>
