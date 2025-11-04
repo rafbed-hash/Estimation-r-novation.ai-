@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { photos, selectedRooms, selectedStyle, transformationGoals, photoAnalysis } = body
 
-    console.log('🍌 Transformation IA demandée:', {
+    console.log('🤖 Transformation IA demandée:', {
       rooms: selectedRooms,
       style: selectedStyle,
       goals: transformationGoals,
