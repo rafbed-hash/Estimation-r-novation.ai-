@@ -23,7 +23,17 @@ interface VentilationFormProps {
 }
 
 export function VentilationForm({ data, onUpdate, onNext }: VentilationFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    ventilationType: string;
+    currentSystem: string;
+    problemAreas: string[];
+    homeSize: string;
+    currentIssues: string[];
+    photos: any[];
+    urgency: string;
+    budget: string;
+    goals: string[];
+  }>({
     ventilationType: data.project?.ventilationType || '',
     currentSystem: data.project?.currentSystem || '',
     problemAreas: data.project?.problemAreas || [],

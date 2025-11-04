@@ -22,7 +22,15 @@ interface MaintenanceFormProps {
 }
 
 export function MaintenanceForm({ data, onUpdate, onNext }: MaintenanceFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    maintenanceType: string;
+    serviceAreas: string[];
+    frequency: string;
+    currentIssues: string[];
+    photos: any[];
+    urgency: string;
+    propertyType: string;
+  }>({
     maintenanceType: data.project?.maintenanceType || '',
     serviceAreas: data.project?.serviceAreas || [],
     frequency: data.project?.frequency || '',
