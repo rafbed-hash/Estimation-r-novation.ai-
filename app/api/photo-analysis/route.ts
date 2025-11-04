@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { GPTVisionAnalysisService } from '@/lib/services/gpt-vision-analysis'; // À implémenter
+import { GPTVisionService } from '@/lib/services/gpt-vision-service';
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
@@ -33,28 +33,66 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Mode Mock pour l'instant (GPT Vision à implémenter)
-    console.log("🔍 Mode Mock - Simulation analyse GPT Vision...");
+    if (!openaiKey) {
+      console.log("⚠️ Pas de clé OpenAI, mode Mock");
+      // Mode Mock
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500));
+      
+      const analysis = {
+        materials: ['peinture', 'carrelage', 'bois'],
+        scope: ['rénovation complète', 'changement revêtement'],
+        complexity: 'medium' as const,
+        recommendations: [
+          'Prévoir isolation thermique',
+          'Vérifier plomberie existante',
+          'Optimiser éclairage naturel'
+        ],
+        confidence: 85 + Math.floor(Math.random() * 10),
+        estimatedCost: {
+          min: 15000,
+          max: 35000,
+          currency: 'CAD'
+        },
+        roomAnalysis: {
+          type: body.roomType || 'pièce',
+          dimensions: 'à mesurer',
+          condition: 'bon état',
+          features: ['fenêtres', 'éclairage naturel']
+        }
+      };
+      
+      return NextResponse.json({
+        success: true,
+        analysis,
+        meta: {
+          processingTime: Date.now() - startTime,
+          model: 'gpt-4o-vision (Mock)',
+          timestamp: new Date().toISOString(),
+          confidence: analysis.confidence
+        }
+      });
+    }
+
+    // Utiliser le vrai service GPT Vision
+    console.log("🔍 Utilisation GPT Vision réel...");
+    const visionService = new GPTVisionService(openaiKey);
     
-    // Simuler un temps de traitement
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500));
+    // Convertir l'URL en base64 si nécessaire
+    let imageBase64: string;
+    if (body.imageBase64) {
+      imageBase64 = body.imageBase64;
+    } else if (body.photoUrl) {
+      imageBase64 = await GPTVisionService.urlToBase64(body.photoUrl);
+    } else {
+      throw new Error('Image base64 ou photoUrl requis');
+    }
     
-    const analysis = {
-      materials: ['peinture', 'carrelage', 'bois'],
-      scope: ['rénovation complète', 'changement revêtement'],
-      complexity: 'medium' as const,
-      recommendations: [
-        'Prévoir isolation thermique',
-        'Vérifier plomberie existante',
-        'Optimiser éclairage naturel'
-      ],
-      confidence: 85 + Math.floor(Math.random() * 10),
-      estimatedCost: {
-        min: 15000,
-        max: 35000,
-        currency: 'CAD'
-      }
-    };
+    const analysis = await visionService.analyzeRenovationPhoto({
+      imageBase64,
+      renovationType: body.renovationType || 'room_transformation',
+      roomType: body.roomType,
+      clientLocation: body.clientLocation || 'Québec, Canada'
+    });
     
     const processingTime = Date.now() - startTime;
     console.log(`✅ Analyse terminée en ${processingTime}ms`);

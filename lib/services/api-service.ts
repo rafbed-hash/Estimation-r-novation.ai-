@@ -104,7 +104,7 @@ class APIService {
     }, 'Analyse photo GPT Vision');
   }
 
-  // Récupération d'inspirations Pexels (à implémenter)
+  // Récupération d'inspirations Pexels
   async getInspiration(data: {
     roomType: string;
     style: string;
@@ -114,7 +114,11 @@ class APIService {
       const response = await fetch('/api/inspiration', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          roomType: data.roomType,
+          style: data.style,
+          count: data.count || 6
+        })
       });
 
       if (!response.ok) {

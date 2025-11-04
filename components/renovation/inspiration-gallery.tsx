@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -79,7 +79,50 @@ export function InspirationGallery({ data, onUpdate, onNext }: InspirationGaller
   const selectedStyle = data.selectedStyle || 'moderne'
   const roomType = data.rooms?.[0] || 'cuisine'
   
-  const currentImages = inspirationImages[selectedStyle as keyof typeof inspirationImages]?.[roomType as keyof typeof inspirationImages['moderne']] || []
+  // État pour les inspirations chargées depuis l'API
+  const [loadedInspirations, setLoadedInspirations] = useState<any[]>([])
+  const [loadingInspirations, setLoadingInspirations] = useState(false)
+  
+  // Charger les inspirations depuis l'API au montage
+  useEffect(() => {
+    const loadInspirations = async () => {
+      if (!selectedStyle || !roomType) return
+      
+      setLoadingInspirations(true)
+      try {
+        console.log('🎨 Chargement inspirations depuis API...')
+        
+        // Import dynamique du service API
+        const { apiService } = await import('@/lib/services/api-service')
+        
+        const result = await apiService.getInspiration({
+          roomType,
+          style: selectedStyle,
+          count: 6
+        })
+        
+        if (result.success) {
+          console.log('✅ Inspirations chargées:', result.inspirations.length)
+          setLoadedInspirations(result.inspirations)
+        } else {
+          console.log('⚠️ Échec chargement, utilisation fallback')
+          setLoadedInspirations([])
+        }
+      } catch (error) {
+        console.error('❌ Erreur chargement inspirations:', error)
+        setLoadedInspirations([])
+      } finally {
+        setLoadingInspirations(false)
+      }
+    }
+    
+    loadInspirations()
+  }, [selectedStyle, roomType])
+  
+  // Utiliser les inspirations chargées ou fallback vers les images statiques
+  const currentImages = loadedInspirations.length > 0 
+    ? loadedInspirations 
+    : inspirationImages[selectedStyle as keyof typeof inspirationImages]?.[roomType as keyof typeof inspirationImages['moderne']] || []
 
   const handleSelectInspiration = (inspiration: any) => {
     setSelectedInspiration(inspiration)
@@ -107,6 +150,13 @@ export function InspirationGallery({ data, onUpdate, onNext }: InspirationGaller
           {currentImages.length} inspirations disponibles
         </Badge>
       </div>
+
+      {loadingInspirations && (
+        <div className="text-center py-8">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Chargement des inspirations {selectedStyle}...</p>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentImages.map((inspiration) => (
