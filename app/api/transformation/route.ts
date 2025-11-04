@@ -61,14 +61,40 @@ async function getCostEstimation(params: any) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { photos, selectedRooms, selectedStyle, transformationGoals } = body
+    const { photos, selectedRooms, selectedStyle, transformationGoals, photoAnalysis } = body
 
     console.log('🍌 Transformation IA demandée:', {
       rooms: selectedRooms,
       style: selectedStyle,
       goals: transformationGoals,
-      photoCount: photos?.length || 0
+      photoCount: photos?.length || 0,
+      hasPhotoAnalysis: !!photoAnalysis
     })
+
+    // Utiliser l'analyse photo si disponible pour l'estimation
+    let enhancedCostEstimation = null
+    if (photoAnalysis) {
+      console.log('📸 Utilisation analyse photo GPT Vision:', {
+        dimensions: photoAnalysis.dimensions,
+        totalCost: photoAnalysis.totalCost.total,
+        confidence: photoAnalysis.confidence
+      })
+      
+      enhancedCostEstimation = {
+        min: Math.round(photoAnalysis.totalCost.total * 0.85),
+        max: Math.round(photoAnalysis.totalCost.total * 1.25),
+        currency: 'CAD',
+        breakdown: [
+          { category: 'Matériaux (analysés)', amount: photoAnalysis.totalCost.materials },
+          { category: 'Main d\'œuvre (calculée)', amount: photoAnalysis.totalCost.labor },
+          { category: 'Taxes QC', amount: photoAnalysis.totalCost.taxes },
+          { category: 'Contingence', amount: photoAnalysis.totalCost.contingency }
+        ],
+        source: 'GPT-4 Vision Analysis',
+        confidence: photoAnalysis.confidence,
+        dimensions: photoAnalysis.dimensions
+      }
+    }
 
     // Vérifier si nous avons la clé API Nano Banana
     const apiKey = process.env.GOOGLE_AI_API_KEY
@@ -97,7 +123,7 @@ export async function POST(request: NextRequest) {
             'Matériaux adaptés au style choisi'
           ]
         },
-        costEstimation: {
+        costEstimation: enhancedCostEstimation || {
           min: 20000,
           max: 45000,
           currency: 'CAD',

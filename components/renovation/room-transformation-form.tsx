@@ -223,15 +223,50 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
     
     console.log('Validation passed, starting transformation...')
     
-    // Lancer la transformation IA
+    // Lancer l'analyse photo GPT Vision + transformation IA
     try {
       setLoadingInspiration(true)
       
+      // ÉTAPE 1: Analyse photo avec GPT Vision pour estimation précise
+      console.log('🔍 Lancement analyse photo GPT Vision...')
+      let photoAnalysis = null
+      
+      if (formData.currentPhotos.length > 0) {
+        try {
+          const analysisResponse = await fetch('/api/photo-analysis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              photoUrl: formData.currentPhotos[0].url,
+              roomType: formData.selectedRooms[0],
+              style: formData.selectedStyle,
+              clientLocation: 'Québec'
+            })
+          })
+          
+          if (analysisResponse.ok) {
+            const analysisResult = await analysisResponse.json()
+            photoAnalysis = analysisResult.analysis
+            console.log('✅ Analyse photo réussie:', {
+              dimensions: photoAnalysis.dimensions,
+              totalCost: photoAnalysis.totalCost.total,
+              confidence: photoAnalysis.confidence
+            })
+          } else {
+            console.log('⚠️ Analyse photo échouée, utilisation estimation standard')
+          }
+        } catch (error) {
+          console.error('❌ Erreur analyse photo:', error)
+        }
+      }
+      
+      // ÉTAPE 2: Transformation IA (existante)
       const transformationData = {
         photos: formData.currentPhotos,
         selectedRooms: formData.selectedRooms,
         selectedStyle: formData.selectedStyle,
-        transformationGoals: formData.transformationGoals
+        transformationGoals: formData.transformationGoals,
+        photoAnalysis: photoAnalysis // Ajouter l'analyse photo
       }
       
       console.log('Sending transformation request:', transformationData)
