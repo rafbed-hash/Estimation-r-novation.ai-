@@ -396,17 +396,17 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                       <div className="relative aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg overflow-hidden border-2 border-primary/20">
                         {/* Simuler une image transformée avec un overlay stylé */}
                         <div className="w-full h-full relative">
-                          {(aiResults?.transformedPhotos?.[0]?.url || processedPhotos?.[0]) ? (
+                          {aiResults?.transformedPhotos?.[0]?.url ? (
                             <>
                               <img
-                                src={aiResults.transformedPhotos?.[0]?.url || processedPhotos[0] || 'https://picsum.photos/800/600?random=10'}
+                                src={aiResults.transformedPhotos[0].url}
                                 alt="Photo transformée"
                                 className="w-full h-full object-cover"
                                 onLoad={() => {
-                                  console.log('✅ Image transformée chargée:', aiResults.transformedPhotos?.[0]?.url || processedPhotos[0])
+                                  console.log('✅ Image transformée chargée:', aiResults.transformedPhotos[0].url)
                                 }}
                                 onError={(e) => {
-                                  console.log('❌ Erreur chargement image:', aiResults.transformedPhotos?.[0]?.url)
+                                  console.log('❌ Erreur chargement image:', aiResults.transformedPhotos[0].url)
                                   console.log('🔄 Utilisation fallback Picsum')
                                   e.currentTarget.src = 'https://picsum.photos/800/600?random=99'
                                 }}
@@ -424,9 +424,31 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                               </div>
                             </>
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-muted-foreground">Rendu IA</span>
-                            </div>
+                            <>
+                              <img
+                                src="https://picsum.photos/800/600?random=1"
+                                alt="Image de démonstration"
+                                className="w-full h-full object-cover"
+                                onLoad={() => {
+                                  console.log('✅ Image de démonstration chargée')
+                                }}
+                                onError={(e) => {
+                                  console.log('❌ Erreur image de démonstration')
+                                  e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIGRlIGTDqW1vbnN0cmF0aW9uPC90ZXh0Pjwvc3ZnPg=='
+                                }}
+                              />
+                              <div className="absolute top-2 right-2">
+                                <div className="bg-primary/90 text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                                  <Sparkles className="h-3 w-3" />
+                                  <span>Demo</span>
+                                </div>
+                              </div>
+                              <div className="absolute bottom-2 left-2">
+                                <div className="bg-black/70 text-white px-2 py-1 rounded text-xs">
+                                  Image de démonstration
+                                </div>
+                              </div>
+                            </>
                           )}
                         </div>
                       </div>

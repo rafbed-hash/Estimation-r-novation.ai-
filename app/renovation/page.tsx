@@ -13,7 +13,8 @@ import {
   StyleSelectionForm,
   ResultsDisplay,
   ProjectTypeSelection,
-  TechnicalQualificationForm
+  TechnicalQualificationForm,
+  InspirationGallery
 } from "../../components/renovation"
 import { PlumbingElectricalForm } from "../../components/renovation/plumbing-electrical-form"
 import { HeatPumpForm } from "../../components/renovation/heat-pump-form"
@@ -58,8 +59,9 @@ export default function RenovationPage() {
         console.log('Using transformation form')
         return [
           ...baseSteps,
-          { id: 4, title: "Transformation de Pièces", icon: Palette, component: RoomTransformationForm },
-          { id: 5, title: "Résultats IA", icon: Calculator, component: ResultsDisplay }
+          { id: 4, title: "Galerie d'Inspiration", icon: Palette, component: InspirationGallery },
+          { id: 5, title: "Transformation de Pièces", icon: Upload, component: RoomTransformationForm },
+          { id: 6, title: "Résultats IA", icon: Calculator, component: ResultsDisplay }
         ]
       
       case 'plomberie':
