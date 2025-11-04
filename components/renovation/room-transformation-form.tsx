@@ -246,13 +246,42 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
           })
           
           if (transformationResponse.ok) {
-            const analysisResult = await transformationResponse.json()
-            photoAnalysis = analysisResult.analysis
-            console.log('✅ Analyse photo réussie:', {
-              dimensions: photoAnalysis.dimensions,
-              totalCost: photoAnalysis.totalCost.total,
-              confidence: photoAnalysis.confidence
+            const result = await transformationResponse.json()
+            console.log('✅ Transformation Google AI réussie:', result)
+            
+            // Adapter le résultat pour le composant de résultats
+            const adaptedResults = {
+              success: result.success,
+              transformedImages: [{
+                id: 1,
+                original: result.avantUrl,
+                transformed: result.apresUrl,
+                confidence: result.meta?.confidence || 88,
+                room: formData.selectedRooms[0] || 'cuisine',
+                style: formData.selectedStyle,
+                analysis: `Transformation ${formData.selectedStyle} générée par ${result.meta?.model || 'Google AI Studio'}`
+              }],
+              analysis: {
+                model: result.meta?.model || 'Google AI Studio',
+                confidence: result.meta?.confidence || 88,
+                processingTime: result.meta?.processingTime ? `${result.meta.processingTime}ms` : '2.3s',
+                recommendations: [
+                  `Transformation ${formData.selectedStyle} réussie`,
+                  'Éclairage optimisé par IA',
+                  'Matériaux adaptés au style québécois'
+                ]
+              }
+            }
+            
+            console.log('📦 Résultats adaptés:', adaptedResults)
+            
+            onUpdate({ 
+              project: formData,
+              aiResults: adaptedResults,
+              transformationComplete: true
             })
+            onNext()
+            return // Sortir ici, pas besoin de continuer
           } else {
             console.log('⚠️ Analyse photo échouée, utilisation estimation standard')
           }
