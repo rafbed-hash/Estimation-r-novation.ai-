@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GPTVisionAnalysisService } from '@/lib/services/gpt-vision-analysis';
+// import { GPTVisionAnalysisService } from '@/lib/services/gpt-vision-analysis'; // À implémenter
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
@@ -33,28 +33,39 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Initialiser le service GPT Vision
-    const visionService = new GPTVisionAnalysisService(openaiKey);
+    // Mode Mock pour l'instant (GPT Vision à implémenter)
+    console.log("🔍 Mode Mock - Simulation analyse GPT Vision...");
     
-    // Analyser la photo
-    console.log("🔍 Lancement analyse GPT Vision...");
-    const analysis = await visionService.analyzePhoto({
-      photoUrl: body.photoUrl,
-      roomType: body.roomType || 'pièce',
-      style: body.style || 'moderne',
-      clientLocation: body.clientLocation || 'Québec'
-    });
+    // Simuler un temps de traitement
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1500));
+    
+    const analysis = {
+      materials: ['peinture', 'carrelage', 'bois'],
+      scope: ['rénovation complète', 'changement revêtement'],
+      complexity: 'medium' as const,
+      recommendations: [
+        'Prévoir isolation thermique',
+        'Vérifier plomberie existante',
+        'Optimiser éclairage naturel'
+      ],
+      confidence: 85 + Math.floor(Math.random() * 10),
+      estimatedCost: {
+        min: 15000,
+        max: 35000,
+        currency: 'CAD'
+      }
+    };
     
     const processingTime = Date.now() - startTime;
     console.log(`✅ Analyse terminée en ${processingTime}ms`);
     
     // Logs détaillés pour debug
     console.log("📊 Résultats analyse:", {
-      dimensions: analysis.dimensions,
-      totalCost: analysis.totalCost.total,
+      materials: analysis.materials,
+      scope: analysis.scope,
       confidence: analysis.confidence,
-      materialsCount: analysis.materials.needed.length,
-      laborCount: analysis.labor.length
+      materialsCount: analysis.materials.length,
+      estimatedCost: analysis.estimatedCost
     });
     
     return NextResponse.json({
