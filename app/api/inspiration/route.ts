@@ -156,45 +156,108 @@ function buildSearchQuery(roomType: string, style: string): string {
 }
 
 function generateMockInspiration(roomType: string, style: string, count: number) {
-  const mockPhotos = [];
+  // URLs Unsplash spécifiques par type de pièce et style
+  const inspirationUrls = {
+    'cuisine': {
+      'moderne': [
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&brightness=10',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&contrast=10',
+        'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop&sat=10'
+      ],
+      'scandinave': [
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&sat=-20',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&sat=-30',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&brightness=15',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&warmth=10',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&sat=-15',
+        'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop&sat=-25'
+      ],
+      'industriel': [
+        'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop&contrast=20',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&contrast=25',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&contrast=15',
+        'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop&sat=-10',
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&contrast=30',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&contrast=20'
+      ]
+    },
+    'salle-bain': {
+      'moderne': [
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&brightness=10',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&contrast=10',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&sat=10'
+      ],
+      'scandinave': [
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&sat=-30',
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&sat=-25',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&brightness=15',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&warmth=10',
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&sat=-20',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&sat=-35'
+      ],
+      'industriel': [
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&contrast=30',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&contrast=25',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&contrast=20',
+        'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&sat=-15',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&contrast=35',
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&contrast=25'
+      ]
+    },
+    'salon': {
+      'moderne': [
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&brightness=10',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&contrast=10',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&sat=10'
+      ],
+      'scandinave': [
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&sat=-25',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&warmth=10',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&sat=-35',
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&brightness=15',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&sat=-20',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&warmth=15'
+      ],
+      'industriel': [
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&contrast=20',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&contrast=15',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&contrast=25',
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&sat=-10',
+        'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&contrast=30',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&contrast=20'
+      ]
+    }
+  };
+
+  // Récupérer les URLs pour le type de pièce et style
+  const roomUrls = inspirationUrls[roomType as keyof typeof inspirationUrls];
+  const styleUrls = roomUrls?.[style as keyof typeof roomUrls] || roomUrls?.['moderne'] || inspirationUrls['cuisine']['moderne'];
   
-  // Générer des URLs Picsum avec des seeds différents pour chaque combinaison
-  const baseSeeds = {
-    'moderne': 100,
-    'scandinave': 200,
-    'industriel': 300,
-    'classique': 400,
-    'minimaliste': 500,
-    'rustique': 600
-  };
-
-  const roomSeeds = {
-    'cuisine': 10,
-    'salle-bain': 20,
-    'salon': 30,
-    'chambre': 40,
-    'bureau': 50,
-    'sous-sol': 60
-  };
-
-  const baseSeed = (baseSeeds[style as keyof typeof baseSeeds] || 100) + 
-                   (roomSeeds[roomType as keyof typeof roomSeeds] || 10);
-
-  for (let i = 0; i < count; i++) {
-    const seed = baseSeed + i;
+  const mockPhotos = [];
+  for (let i = 0; i < Math.min(count, styleUrls.length); i++) {
+    const url = styleUrls[i];
     mockPhotos.push({
-      id: seed,
-      url: `https://picsum.photos/400/300?random=${seed}`,
+      id: 1000 + i,
+      url: url,
       src: {
-        small: `https://picsum.photos/200/150?random=${seed}`,
-        medium: `https://picsum.photos/400/300?random=${seed}`,
-        large: `https://picsum.photos/800/600?random=${seed}`,
-        original: `https://picsum.photos/1200/900?random=${seed}`
+        small: url.replace('w=400&h=300', 'w=200&h=150'),
+        medium: url,
+        large: url.replace('w=400&h=300', 'w=800&h=600'),
+        original: url.replace('w=400&h=300', 'w=1200&h=900')
       },
-      alt: `Inspiration ${style} pour ${roomType} #${i + 1}`,
-      photographer: 'Picsum Photos',
-      photographer_url: 'https://picsum.photos',
-      pexels_url: `https://picsum.photos/400/300?random=${seed}`,
+      alt: `${roomType} ${style} inspiration #${i + 1}`,
+      photographer: 'Unsplash Collection',
+      photographer_url: 'https://unsplash.com',
+      pexels_url: url,
       roomType,
       style,
       avgColor: '#f0f0f0',
@@ -209,9 +272,9 @@ function generateMockInspiration(roomType: string, style: string, count: number)
     success: true,
     inspirations: mockPhotos,
     meta: {
-      source: 'Mock (Picsum)',
+      source: 'Mock (Unsplash Curated)',
       query: `${style} ${roomType}`,
-      totalResults: count,
+      totalResults: mockPhotos.length,
       page: 1,
       processingTime: 500,
       timestamp: new Date().toISOString(),
