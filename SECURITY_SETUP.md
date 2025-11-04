@@ -23,8 +23,8 @@ OPENAI_API_KEY=your_openai_api_key_here
 # Pexels API pour les photos d'inspiration
 PEXELS_API_KEY=your_pexels_api_key_here
 
-# Banana AI API pour la génération d'images
-BANANA_API_KEY=your_banana_ai_api_key_here
+# Make.com Webhook pour automatisation
+NEXT_PUBLIC_MAKE_WEBHOOK_URL=your_webhook_url_here
 
 # Make.com Webhook URL
 NEXT_PUBLIC_MAKE_WEBHOOK_URL=https://hook.make.com/your-webhook-url-here
@@ -49,5 +49,5 @@ Dans Netlify, ajoutez ces variables d'environnement dans :
 | Google AI Studio | `GOOGLE_AI_STUDIO_API_KEY` | Transformation d'images et analyse IA |
 | OpenAI | `OPENAI_API_KEY` | Estimation des coûts de rénovation |
 | Pexels | `PEXELS_API_KEY` | Photos d'inspiration |
-| Banana AI | `BANANA_API_KEY` | Génération d'images (optionnel) |
+| Make.com | `NEXT_PUBLIC_MAKE_WEBHOOK_URL` | Intégration workflow |
 | Make.com | `NEXT_PUBLIC_MAKE_WEBHOOK_URL` | Intégration workflow |

@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
         }],
         confidence: 70,
         processingTime: 1000,
-        model: 'nano-banana-fallback',
+        model: 'google-ai-studio-fallback',
         prompt: `Analyse ${body.project.selectedStyle} pour ${body.project.selectedRooms.join(', ')}`
       }
       

@@ -80,7 +80,7 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
     
     try {
       // Appel à l'API de traitement
-      setGenerationStep('Analyse de vos photos par Banana AI...')
+      setGenerationStep('Analyse de vos photos par Google AI Studio...')
       
       // Convertir les photos en base64 pour l'API
       console.log('📸 Converting photos:', data.photos?.length || 0, 'photos')
@@ -492,7 +492,7 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                 <div className="text-xs text-muted-foreground">Rendus générés</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">Banana AI</div>
+                <div className="text-2xl font-bold text-primary">Google AI</div>
                 <div className="text-xs text-muted-foreground">Technologie</div>
               </div>
             </div>
@@ -553,7 +553,7 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
 
                   <div className="pt-4 border-t border-border/50">
                     <p className="text-sm text-muted-foreground text-center">
-                      🤖 <strong>Banana AI</strong> a analysé {data.photos?.length || 0} photos et généré {aiResults.transformedPhotos.length} visualisations 
+                      🤖 <strong>Google AI Studio</strong> a analysé {data.photos?.length || 0} photos et généré {aiResults.transformedPhotos.length} visualisations 
                       en {aiResults.processingTime} avec une confiance de {aiResults.confidence}%
                     </p>
                   </div>
@@ -589,7 +589,7 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
               <div className="grid md:grid-cols-3 gap-4 text-sm">
                 <div className="space-y-2">
                   <div className="font-medium text-blue-700">Modèle IA utilisé</div>
-                  <div className="text-blue-600">Banana AI v2.1</div>
+                  <div className="text-blue-600">Google AI Studio v2.1</div>
                   <div className="text-xs text-blue-500">Spécialisé en architecture d'intérieur</div>
                 </div>
                 <div className="space-y-2">
