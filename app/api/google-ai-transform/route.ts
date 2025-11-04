@@ -68,11 +68,11 @@ export async function POST(req: NextRequest) {
 
 function getStyleImage(style: string): string {
   const styleImages = {
-    'moderne': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80',
-    'scandinave': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80',
-    'industriel': 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=800&q=80',
-    'classique': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80',
-    'minimaliste': 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&q=80'
+    'moderne': 'https://picsum.photos/800/600?random=1',
+    'scandinave': 'https://picsum.photos/800/600?random=2',
+    'industriel': 'https://picsum.photos/800/600?random=3',
+    'classique': 'https://picsum.photos/800/600?random=4',
+    'minimaliste': 'https://picsum.photos/800/600?random=5'
   };
   
   return styleImages[style?.toLowerCase() as keyof typeof styleImages] || styleImages['moderne'];

@@ -399,7 +399,7 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                           {(aiResults?.transformedPhotos?.[0]?.url || processedPhotos?.[0]) ? (
                             <>
                               <img
-                                src={aiResults.transformedPhotos?.[0]?.url || processedPhotos[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80'}
+                                src={aiResults.transformedPhotos?.[0]?.url || processedPhotos[0] || 'https://picsum.photos/800/600?random=10'}
                                 alt="Photo transformée"
                                 className="w-full h-full object-cover"
                                 onLoad={() => {
@@ -407,7 +407,8 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                                 }}
                                 onError={(e) => {
                                   console.log('❌ Erreur chargement image:', aiResults.transformedPhotos?.[0]?.url)
-                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
+                                  console.log('🔄 Utilisation fallback Picsum')
+                                  e.currentTarget.src = 'https://picsum.photos/800/600?random=99'
                                 }}
                               />
                               <div className="absolute top-2 right-2">
