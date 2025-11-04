@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send } from "lucide-react"
-import { 
+import {
   ClientInfoForm,
   HouseInfoForm,
   RoomSelectionForm,
@@ -14,7 +14,9 @@ import {
   ResultsDisplay,
   ProjectTypeSelection,
   TechnicalQualificationForm,
-  InspirationGallery
+  InspirationGallery,
+  VentilationForm,
+  MaintenanceForm
 } from "../../components/renovation"
 import { PlumbingElectricalForm } from "../../components/renovation/plumbing-electrical-form"
 import { HeatPumpForm } from "../../components/renovation/heat-pump-form"
@@ -85,6 +87,22 @@ export default function RenovationPage() {
         return [
           ...baseSteps,
           { id: 4, title: "Installation Thermopompe", icon: Upload, component: HeatPumpForm },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      case 'ventilation':
+        console.log('Using ventilation form')
+        return [
+          ...baseSteps,
+          { id: 4, title: "Ventilation/CVC", icon: Upload, component: VentilationForm },
+          { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
+        ]
+      
+      case 'maintenance':
+        console.log('Using maintenance form')
+        return [
+          ...baseSteps,
+          { id: 4, title: "Maintenance Générale", icon: Upload, component: MaintenanceForm },
           { id: 5, title: "Résultats", icon: Calculator, component: ResultsDisplay }
         ]
       
