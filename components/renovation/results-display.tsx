@@ -34,6 +34,14 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [processedPhotos, setProcessedPhotos] = useState<string[]>([])  // Pour stocker les photos converties
 
+  // 🔍 DEBUG: Logs pour voir les données reçues
+  console.log('🎯 ResultsDisplay - Données reçues:', {
+    data: data,
+    aiResults: data.aiResults,
+    transformedPhotos: data.aiResults?.transformedPhotos,
+    transformedPhotosUrl: data.aiResults?.transformedPhotos?.[0]?.url
+  })
+
   useEffect(() => {
     // Conversion immédiate des photos pour l'affichage
     if (data.photos && data.photos.length > 0) {
@@ -388,14 +396,18 @@ export function ResultsDisplay({ data, onUpdate, onNext }: ResultsDisplayProps) 
                       <div className="relative aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg overflow-hidden border-2 border-primary/20">
                         {/* Simuler une image transformée avec un overlay stylé */}
                         <div className="w-full h-full relative">
-                          {processedPhotos && processedPhotos[0] ? (
+                          {(aiResults?.transformedPhotos?.[0]?.url || processedPhotos?.[0]) ? (
                             <>
                               <img
-                                src={aiResults.transformedPhotos?.[0]?.url || processedPhotos[0]}
+                                src={aiResults.transformedPhotos?.[0]?.url || processedPhotos[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80'}
                                 alt="Photo transformée"
                                 className="w-full h-full object-cover"
+                                onLoad={() => {
+                                  console.log('✅ Image transformée chargée:', aiResults.transformedPhotos?.[0]?.url || processedPhotos[0])
+                                }}
                                 onError={(e) => {
-                                  e.currentTarget.src = '/placeholder-image.svg'
+                                  console.log('❌ Erreur chargement image:', aiResults.transformedPhotos?.[0]?.url)
+                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
                                 }}
                               />
                               <div className="absolute top-2 right-2">

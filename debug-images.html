@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Images Transformation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-image { margin: 10px; padding: 10px; border: 1px solid #ccc; }
+        img { max-width: 300px; height: auto; border: 2px solid #007bff; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Images Transformation</h1>
+    
+    <div class="test-image">
+        <h3>Test Image 1 - Moderne</h3>
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80" 
+             alt="Test moderne" 
+             onload="console.log('✅ Image moderne chargée')"
+             onerror="console.log('❌ Erreur image moderne')">
+    </div>
+    
+    <div class="test-image">
+        <h3>Test Image 2 - Scandinave</h3>
+        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80" 
+             alt="Test scandinave"
+             onload="console.log('✅ Image scandinave chargée')"
+             onerror="console.log('❌ Erreur image scandinave')">
+    </div>
+    
+    <div class="test-image">
+        <h3>Test API Google AI Transform</h3>
+        <button onclick="testAPI()">Tester l'API</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = '⏳ Test en cours...';
+            
+            try {
+                const response = await fetch('/api/google-ai-transform', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        photoUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400',
+                        roomType: 'cuisine',
+                        style: 'moderne',
+                        goals: 'test'
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('🎯 Résultat API:', result);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ API fonctionne !</div>
+                        <p><strong>Avant:</strong> ${result.avantUrl}</p>
+                        <p><strong>Après:</strong> ${result.apresUrl}</p>
+                        <p><strong>Modèle:</strong> ${result.meta?.model}</p>
+                        <img src="${result.apresUrl}" alt="Résultat API" style="max-width: 200px;">
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Erreur API: ${response.status}</div>`;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                resultDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+            }
+        }
+        
+        // Test au chargement
+        console.log('🚀 Page de debug chargée');
+    </script>
+</body>
+</html>
