@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image Simple</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        img { max-width: 400px; border: 2px solid red; margin: 10px; }
+        .test { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Image Ultra Simple</h1>
+    
+    <div class="test">
+        <h3>Test 1 - Image Unsplash Directe</h3>
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80" alt="Test 1">
+        <p>Si cette image s'affiche, le problème n'est pas les URLs Unsplash</p>
+    </div>
+    
+    <div class="test">
+        <h3>Test 2 - Image avec JavaScript</h3>
+        <div id="js-image"></div>
+        <button onclick="loadImage()">Charger Image</button>
+    </div>
+    
+    <div class="test">
+        <h3>Test 3 - Simulation Données AI</h3>
+        <div id="ai-simulation"></div>
+        <button onclick="simulateAI()">Simuler AI Results</button>
+    </div>
+    
+    <script>
+        function loadImage() {
+            const div = document.getElementById('js-image');
+            div.innerHTML = '<img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80" alt="JS Test">';
+        }
+        
+        function simulateAI() {
+            // Simuler exactement les données qu'on envoie
+            const aiResults = {
+                transformedPhotos: [{
+                    url: 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=800&q=80'
+                }]
+            };
+            
+            console.log('🎯 Simulation AI Results:', aiResults);
+            
+            const div = document.getElementById('ai-simulation');
+            const imageUrl = aiResults.transformedPhotos?.[0]?.url;
+            
+            if (imageUrl) {
+                div.innerHTML = `
+                    <p>✅ URL trouvée: ${imageUrl}</p>
+                    <img src="${imageUrl}" alt="AI Simulation" onload="console.log('✅ Image AI chargée')" onerror="console.log('❌ Erreur image AI')">
+                `;
+            } else {
+                div.innerHTML = '<p>❌ Pas d\'URL trouvée</p>';
+            }
+        }
+        
+        console.log('🚀 Page de test chargée');
+    </script>
+</body>
+</html>

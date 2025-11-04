@@ -273,13 +273,16 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
             
             console.log('📦 Résultats adaptés:', adaptedResults)
             
-            onUpdate({ 
+            const updateData = { 
               project: formData,
               aiResults: adaptedResults,
               transformationComplete: true
-            })
+            }
+            
+            console.log('🔄 Appel onUpdate avec:', updateData)
+            onUpdate(updateData)
             onNext()
-            return // Sortir ici, pas besoin de continuer
+            return // Sortir ici, transformation réussie
           } else {
             console.log('⚠️ Analyse photo échouée, utilisation estimation standard')
           }
