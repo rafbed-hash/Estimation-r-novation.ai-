@@ -233,19 +233,20 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
       
       if (formData.currentPhotos.length > 0) {
         try {
-          const analysisResponse = await fetch('/api/photo-analysis', {
+          const transformationResponse = await fetch('/api/google-ai-transform', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               photoUrl: formData.currentPhotos[0].url,
               roomType: formData.selectedRooms[0],
               style: formData.selectedStyle,
-              clientLocation: 'Québec'
+              goals: formData.transformationGoals,
+              photoAnalysis: photoAnalysis
             })
           })
           
-          if (analysisResponse.ok) {
-            const analysisResult = await analysisResponse.json()
+          if (transformationResponse.ok) {
+            const analysisResult = await transformationResponse.json()
             photoAnalysis = analysisResult.analysis
             console.log('✅ Analyse photo réussie:', {
               dimensions: photoAnalysis.dimensions,
