@@ -202,14 +202,14 @@ Retourne un JSON avec cette structure exacte:
     // Fourchettes de prix réalistes par pièce - Prix Québec 2025
     // Basé sur les coûts réels de main-d'œuvre et matériaux au Québec
     const roomPriceRanges: Record<string, {min: number, max: number}> = {
-      'cuisine': { min: 25000, max: 70000 },        // Cuisine: Main-d'œuvre spécialisée 65-85$/h + matériaux Québec
-      'salle-de-bain': { min: 15000, max: 40000 },  // SDB: Plomberie 70-90$/h + carrelage/sanitaires premium
-      'salon': { min: 8000, max: 28000 },           // Salon: Peintre 45-60$/h + électricien 75-95$/h
-      'chambre': { min: 6000, max: 18000 },         // Chambre: Peinture + plancher + électricité
-      'bureau': { min: 5000, max: 15000 },          // Bureau: Aménagement + éclairage spécialisé
-      'entree': { min: 3000, max: 10000 },          // Entrée: Revêtements + isolation (climat Québec)
-      'salle-a-manger': { min: 7000, max: 22000 },  // Salle à manger: Plancher + éclairage + peinture
-      'garage': { min: 4000, max: 12000 }           // Garage: Isolation + chauffage (hiver Québec)
+      'cuisine': { min: 8000, max: 18000 },         // Cuisine: Rénovation partielle à complète
+      'salle-de-bain': { min: 5000, max: 12000 },   // SDB: Salle de bain standard québécoise
+      'salon': { min: 4000, max: 10000 },           // Salon: Peinture, plancher, éclairage
+      'chambre': { min: 3000, max: 8000 },          // Chambre: Peinture + plancher + électricité
+      'bureau': { min: 2500, max: 6000 },           // Bureau: Espace plus petit
+      'entree': { min: 2000, max: 5000 },           // Entrée: Revêtements + isolation
+      'salle-a-manger': { min: 3500, max: 8000 },   // Salle à manger: Plancher + éclairage + peinture
+      'garage': { min: 3000, max: 7000 }            // Garage: Isolation + chauffage
     }
 
     // Calculer les fourchettes totales

@@ -14,8 +14,8 @@ Les clés API ne doivent **JAMAIS** être exposées dans le code source. Elles d
 2. Éditez `.env.local` et remplacez les valeurs par vos vraies clés API :
 
 ```env
-# Google AI Gemini 2.5 Flash (Nano Banana) API
-NANO_BANANA_API_KEY=AIzaSyC1x0c6u7dnez9UlwuyVZtbX9pXzMzNU8U
+# Google AI Studio API pour transformation d'images
+GOOGLE_AI_STUDIO_API_KEY=your_google_ai_key_here
 
 # OpenAI API pour l'estimation des coûts
 OPENAI_API_KEY=your_openai_api_key_here
@@ -46,7 +46,7 @@ Dans Netlify, ajoutez ces variables d'environnement dans :
 
 | Service | Variable | Description |
 |---------|----------|-------------|
-| Nano Banana | `NANO_BANANA_API_KEY` | Gemini 2.5 Flash Image pour l'analyse IA |
+| Google AI Studio | `GOOGLE_AI_STUDIO_API_KEY` | Transformation d'images et analyse IA |
 | OpenAI | `OPENAI_API_KEY` | Estimation des coûts de rénovation |
 | Pexels | `PEXELS_API_KEY` | Photos d'inspiration |
 | Banana AI | `BANANA_API_KEY` | Génération d'images (optionnel) |

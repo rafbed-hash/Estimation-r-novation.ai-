@@ -336,7 +336,7 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
             analysis: `Transformation ${formData.selectedStyle} appliquée avec succès`
           })),
           analysis: {
-            model: 'Nano Banana AI v2.1',
+            model: 'Google AI Studio v2.1',
             confidence: 85,
             processingTime: '2.3s',
             recommendations: [
@@ -347,8 +347,8 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
             ]
           },
           costEstimation: {
-            totalMin: 20000 + (formData.selectedRooms.length - 1) * 8000,
-            totalMax: 45000 + (formData.selectedRooms.length - 1) * 15000,
+            totalMin: 5000 + (formData.selectedRooms.length - 1) * 3000,
+            totalMax: 12000 + (formData.selectedRooms.length - 1) * 6000,
             currency: 'CAD'
           }
         }

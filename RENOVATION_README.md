@@ -13,7 +13,7 @@ Cette application permet aux clients de visualiser leur projet de rénovation gr
 6. **Résultats IA** - Visualisations et estimation des coûts
 
 ### Intégrations IA
-- **Nano Banana (Gemini 2.5 Flash Image)** - Génération d'images et visualisations 3D
+- **Google AI Studio** - Transformation d'images et visualisations IA
 - **Gemini 2.5 Flash** - Analyse intelligente des photos et estimation des coûts
 - **Make.com** - Automatisation et envoi des leads
 
@@ -28,8 +28,8 @@ cp env.example .env.local
 ```
 
 ```env
-# Nano Banana (Gemini 2.5 Flash Image) API
-GOOGLE_AI_API_KEY=your_nano_banana_api_key_here
+# Google AI Studio API
+GOOGLE_AI_STUDIO_API_KEY=your_google_ai_key_here
 
 # Gemini 2.5 Flash pour l'analyse et estimation
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -43,14 +43,14 @@ MAKE_API_KEY=your_make_api_key_here
 
 ### 2. Obtenir les clés API
 
-#### Nano Banana (Gemini 2.5 Flash Image)
+#### Google AI Studio
 1. Allez sur [Google AI Studio](https://aistudio.google.com/)
 2. Créez un nouveau projet ou sélectionnez un projet existant
-3. Activez l'API Gemini 2.5 Flash Image (Nano Banana)
-4. Créez une clé API et copiez-la dans `GOOGLE_AI_API_KEY`
+3. Activez l'API Gemini 2.5 Flash
+4. Créez une clé API et copiez-la dans `GOOGLE_AI_STUDIO_API_KEY`
 
 #### Gemini 2.5 Flash
-1. Utilisez la même clé API que Nano Banana
+1. Utilisez la même clé API que Google AI Studio
 2. Assurez-vous que l'API Gemini 2.5 Flash est activée
 3. Copiez la clé dans `GEMINI_API_KEY` si différente
 
@@ -92,7 +92,7 @@ components/
     └── results-display.tsx         # Affichage des résultats
 lib/
 └── services/
-    ├── nano-banana.ts              # Service Nano Banana (Gemini 2.5 Flash Image)
+    ├── google-ai-studio.ts         # Service Google AI Studio
     ├── gemini-analysis.ts          # Service Gemini 2.5 Flash
     └── make-webhook.ts             # Service Make.com
 ```
@@ -177,9 +177,9 @@ Le webhook Make.com reçoit ces données :
 - Vérifiez que toutes les variables d'environnement sont définies dans `.env.local`
 - Redémarrez le serveur après modification des variables
 
-### Erreur Nano Banana
+### Erreur Google AI Studio
 - Vérifiez que la clé API est valide
-- Assurez-vous que l'API Gemini 2.5 Flash Image est activée
+- Assurez-vous que l'API Gemini 2.5 Flash est activée
 - Vérifiez les quotas et limites de votre compte
 
 ### Erreur Gemini 2.5 Flash

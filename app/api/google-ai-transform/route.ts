@@ -75,34 +75,34 @@ function getStyleImage(style: string, roomType?: string): string {
   // Images par style et type de pièce pour plus de réalisme
   const styleImages = {
     'moderne': {
-      'cuisine': 'https://picsum.photos/800/600?random=101',
-      'salle-bain': 'https://picsum.photos/800/600?random=102', 
-      'salon': 'https://picsum.photos/800/600?random=103',
-      'default': 'https://picsum.photos/800/600?random=1'
+      'cuisine': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
+      'salle-bain': 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=800&h=600&fit=crop', 
+      'salon': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop',
+      'default': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop'
     },
     'scandinave': {
-      'cuisine': 'https://picsum.photos/800/600?random=201',
-      'salle-bain': 'https://picsum.photos/800/600?random=202',
-      'salon': 'https://picsum.photos/800/600?random=203', 
-      'default': 'https://picsum.photos/800/600?random=2'
+      'cuisine': 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&h=600&fit=crop',
+      'salle-bain': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop&sat=-30',
+      'salon': 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=800&h=600&fit=crop&sat=-25', 
+      'default': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&sat=-20'
     },
     'industriel': {
-      'cuisine': 'https://picsum.photos/800/600?random=301',
-      'salle-bain': 'https://picsum.photos/800/600?random=302',
-      'salon': 'https://picsum.photos/800/600?random=303',
-      'default': 'https://picsum.photos/800/600?random=3'
+      'cuisine': 'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=800&h=600&fit=crop&contrast=15',
+      'salle-bain': 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=800&h=600&fit=crop&contrast=30',
+      'salon': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&contrast=20',
+      'default': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&contrast=15'
     },
     'classique': {
-      'cuisine': 'https://picsum.photos/800/600?random=401',
-      'salle-bain': 'https://picsum.photos/800/600?random=402',
-      'salon': 'https://picsum.photos/800/600?random=403',
-      'default': 'https://picsum.photos/800/600?random=4'
+      'cuisine': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop&warmth=15',
+      'salle-bain': 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&h=600&fit=crop&warmth=10',
+      'salon': 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=800&h=600&fit=crop&warmth=20',
+      'default': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&warmth=15'
     },
     'minimaliste': {
-      'cuisine': 'https://picsum.photos/800/600?random=501',
-      'salle-bain': 'https://picsum.photos/800/600?random=502',
-      'salon': 'https://picsum.photos/800/600?random=503',
-      'default': 'https://picsum.photos/800/600?random=5'
+      'cuisine': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop&sat=-50',
+      'salle-bain': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&h=600&fit=crop&sat=-60',
+      'salon': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop&sat=-55',
+      'default': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&sat=-50'
     }
   };
   

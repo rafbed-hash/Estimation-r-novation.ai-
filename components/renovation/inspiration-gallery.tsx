@@ -25,53 +25,53 @@ export function InspirationGallery({ data, onUpdate, onNext }: InspirationGaller
   const inspirationImages = {
     'moderne': {
       'cuisine': [
-        { id: 1, url: 'https://picsum.photos/400/300?random=101', title: 'Cuisine Moderne Épurée', description: 'Îlot central, finitions blanches' },
-        { id: 2, url: 'https://picsum.photos/400/300?random=102', title: 'Cuisine Moderne Noire', description: 'Électroménagers intégrés, plan de travail quartz' },
-        { id: 3, url: 'https://picsum.photos/400/300?random=103', title: 'Cuisine Moderne Bois', description: 'Mélange bois et métal, éclairage LED' }
+        { id: 1, url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop', title: 'Cuisine Moderne Épurée', description: 'Îlot central, finitions blanches' },
+        { id: 2, url: 'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop', title: 'Cuisine Moderne Noire', description: 'Électroménagers intégrés, plan de travail quartz' },
+        { id: 3, url: 'https://images.unsplash.com/photo-1556909085-4d1b5b8e5c7a?w=400&h=300&fit=crop', title: 'Cuisine Moderne Bois', description: 'Mélange bois et métal, éclairage LED' }
       ],
       'salle-bain': [
-        { id: 4, url: 'https://picsum.photos/400/300?random=104', title: 'Salle de Bain Moderne', description: 'Douche italienne, carrelage grand format' },
-        { id: 5, url: 'https://picsum.photos/400/300?random=105', title: 'Salle de Bain Zen', description: 'Baignoire îlot, matériaux naturels' },
-        { id: 6, url: 'https://picsum.photos/400/300?random=106', title: 'Salle de Bain Luxe', description: 'Marbre, robinetterie dorée' }
+        { id: 4, url: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop', title: 'Salle de Bain Moderne', description: 'Douche italienne, carrelage grand format' },
+        { id: 5, url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop', title: 'Salle de Bain Zen', description: 'Baignoire îlot, matériaux naturels' },
+        { id: 6, url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop', title: 'Salle de Bain Luxe', description: 'Marbre, robinetterie dorée' }
       ],
       'salon': [
-        { id: 7, url: 'https://picsum.photos/400/300?random=107', title: 'Salon Moderne Ouvert', description: 'Espace ouvert, mobilier épuré' },
-        { id: 8, url: 'https://picsum.photos/400/300?random=108', title: 'Salon Moderne Cosy', description: 'Cheminée moderne, canapé design' },
-        { id: 9, url: 'https://picsum.photos/400/300?random=109', title: 'Salon Moderne Lumineux', description: 'Grandes fenêtres, couleurs neutres' }
+        { id: 7, url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop', title: 'Salon Moderne Ouvert', description: 'Espace ouvert, mobilier épuré' },
+        { id: 8, url: 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop', title: 'Salon Moderne Cosy', description: 'Cheminée moderne, canapé design' },
+        { id: 9, url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop', title: 'Salon Moderne Lumineux', description: 'Grandes fenêtres, couleurs neutres' }
       ]
     },
     'scandinave': {
       'cuisine': [
-        { id: 10, url: 'https://picsum.photos/400/300?random=110', title: 'Cuisine Scandinave Claire', description: 'Bois clair, blanc, simplicité' },
-        { id: 11, url: 'https://picsum.photos/400/300?random=111', title: 'Cuisine Scandinave Cosy', description: 'Bois naturel, plantes vertes' },
-        { id: 12, url: 'https://picsum.photos/400/300?random=112', title: 'Cuisine Scandinave Minimaliste', description: 'Lignes épurées, fonctionnalité' }
+        { id: 10, url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&sat=-20', title: 'Cuisine Scandinave Claire', description: 'Bois clair, blanc, simplicité' },
+        { id: 11, url: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop', title: 'Cuisine Scandinave Cosy', description: 'Bois naturel, plantes vertes' },
+        { id: 12, url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&brightness=10', title: 'Cuisine Scandinave Minimaliste', description: 'Lignes épurées, fonctionnalité' }
       ],
       'salle-bain': [
-        { id: 13, url: 'https://picsum.photos/400/300?random=113', title: 'Salle de Bain Scandinave', description: 'Bois et blanc, simplicité nordique' },
-        { id: 14, url: 'https://picsum.photos/400/300?random=114', title: 'Salle de Bain Nature', description: 'Matériaux naturels, plantes' },
-        { id: 15, url: 'https://picsum.photos/400/300?random=115', title: 'Salle de Bain Hygge', description: 'Ambiance chaleureuse, textiles doux' }
+        { id: 13, url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&sat=-30', title: 'Salle de Bain Scandinave', description: 'Bois et blanc, simplicité nordique' },
+        { id: 14, url: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&sat=-40', title: 'Salle de Bain Nature', description: 'Matériaux naturels, plantes' },
+        { id: 15, url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&brightness=15', title: 'Salle de Bain Hygge', description: 'Ambiance chaleureuse, textiles doux' }
       ],
       'salon': [
-        { id: 16, url: 'https://picsum.photos/400/300?random=116', title: 'Salon Scandinave Lumineux', description: 'Bois clair, textiles naturels' },
-        { id: 17, url: 'https://picsum.photos/400/300?random=117', title: 'Salon Scandinave Cosy', description: 'Cheminée, plaids, hygge' },
-        { id: 18, url: 'https://picsum.photos/400/300?random=118', title: 'Salon Scandinave Épuré', description: 'Minimalisme nordique' }
+        { id: 16, url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&sat=-25', title: 'Salon Scandinave Lumineux', description: 'Bois clair, textiles naturels' },
+        { id: 17, url: 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&warmth=10', title: 'Salon Scandinave Cosy', description: 'Cheminée, plaids, hygge' },
+        { id: 18, url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&sat=-35', title: 'Salon Scandinave Épuré', description: 'Minimalisme nordique' }
       ]
     },
     'industriel': {
       'cuisine': [
-        { id: 19, url: 'https://picsum.photos/400/300?random=119', title: 'Cuisine Industrielle Loft', description: 'Métal, béton, briques apparentes' },
-        { id: 20, url: 'https://picsum.photos/400/300?random=120', title: 'Cuisine Industrielle Moderne', description: 'Acier inoxydable, îlot métal' },
-        { id: 21, url: 'https://picsum.photos/400/300?random=121', title: 'Cuisine Industrielle Vintage', description: 'Métal patiné, bois brut' }
+        { id: 19, url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&contrast=20', title: 'Cuisine Industrielle Loft', description: 'Métal, béton, briques apparentes' },
+        { id: 20, url: 'https://images.unsplash.com/photo-1556909085-f3d0c4d5f5d7?w=400&h=300&fit=crop&contrast=15', title: 'Cuisine Industrielle Moderne', description: 'Acier inoxydable, îlot métal' },
+        { id: 21, url: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=300&fit=crop&contrast=25', title: 'Cuisine Industrielle Vintage', description: 'Métal patiné, bois brut' }
       ],
       'salle-bain': [
-        { id: 22, url: 'https://picsum.photos/400/300?random=122', title: 'Salle de Bain Industrielle', description: 'Tuyaux apparents, métal brut' },
-        { id: 23, url: 'https://picsum.photos/400/300?random=123', title: 'Salle de Bain Loft', description: 'Béton ciré, robinetterie noire' },
-        { id: 24, url: 'https://picsum.photos/400/300?random=124', title: 'Salle de Bain Urban', description: 'Style urbain, matériaux bruts' }
+        { id: 22, url: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=400&h=300&fit=crop&contrast=30', title: 'Salle de Bain Industrielle', description: 'Tuyaux apparents, métal brut' },
+        { id: 23, url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=300&fit=crop&contrast=20', title: 'Salle de Bain Loft', description: 'Béton ciré, robinetterie noire' },
+        { id: 24, url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop&contrast=25', title: 'Salle de Bain Urban', description: 'Style urbain, matériaux bruts' }
       ],
       'salon': [
-        { id: 25, url: 'https://picsum.photos/400/300?random=125', title: 'Salon Industriel Loft', description: 'Poutres métalliques, briques' },
-        { id: 26, url: 'https://picsum.photos/400/300?random=126', title: 'Salon Industriel Vintage', description: 'Mobilier récupéré, métal patiné' },
-        { id: 27, url: 'https://picsum.photos/400/300?random=127', title: 'Salon Industriel Moderne', description: 'Design contemporain, matériaux bruts' }
+        { id: 25, url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&contrast=20', title: 'Salon Industriel Loft', description: 'Poutres métalliques, briques' },
+        { id: 26, url: 'https://images.unsplash.com/photo-1571460633648-d5a4b2b2a7a8?w=400&h=300&fit=crop&contrast=15', title: 'Salon Industriel Vintage', description: 'Mobilier récupéré, métal patiné' },
+        { id: 27, url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop&contrast=25', title: 'Salon Industriel Moderne', description: 'Design contemporain, matériaux bruts' }
       ]
     }
   }

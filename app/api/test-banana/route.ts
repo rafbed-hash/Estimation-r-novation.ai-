@@ -3,7 +3,7 @@ import { GoogleAIStudioService } from '@/lib/services/google-ai-studio'
 
 export async function GET() {
   try {
-    console.log('🧪 Testing Nano Banana (Gemini 2.5 Flash Image) API...')
+    console.log('🧪 Testing Google AI Studio API...')
     
     // Check environment variables
     const nanoBananaKey = process.env.GOOGLE_AI_API_KEY || process.env.NANO_BANANA_API_KEY || process.env.GOOGLE_AI_STUDIO_API_KEY
@@ -16,7 +16,7 @@ export async function GET() {
     if (!nanoBananaKey) {
       return NextResponse.json({
         success: false,
-        error: 'Nano Banana API key not found',
+        error: 'Google AI Studio API key not found',
         details: {
           GOOGLE_AI_API_KEY: !!process.env.GOOGLE_AI_API_KEY,
           NANO_BANANA_API_KEY: !!process.env.NANO_BANANA_API_KEY,
@@ -25,17 +25,17 @@ export async function GET() {
       }, { status: 500 })
     }
 
-    // Initialize Nano Banana service
-    const nanoBanana = new GoogleAIStudioService(nanoBananaKey)
+    // Initialize Google AI Studio service
+    const googleAI = new GoogleAIStudioService(nanoBananaKey)
     
     // Test API key validation
-    console.log('🍌 Testing Nano Banana API key validation...')
-    const isValidKey = await nanoBanana.validateApiKey()
+    console.log('🔑 Testing Google AI Studio API key validation...')
+    const isValidKey = await googleAI.validateApiKey()
     
     if (!isValidKey) {
       return NextResponse.json({
         success: false,
-        error: 'Invalid Nano Banana API key',
+        error: 'Invalid Google AI Studio API key',
         details: {
           keyPresent: true,
           keyValid: false,
@@ -45,7 +45,7 @@ export async function GET() {
     }
 
     // Test with a simple text-only request (no image)
-    console.log('🎨 Testing Nano Banana text analysis...')
+    console.log('🎨 Testing Google AI Studio text analysis...')
     
     try {
       const testResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, {
@@ -73,11 +73,11 @@ export async function GET() {
 
       if (!testResponse.ok) {
         const errorText = await testResponse.text()
-        console.error('❌ Nano Banana API Error:', testResponse.status, errorText)
+        console.error('❌ Google AI Studio API Error:', testResponse.status, errorText)
         
         return NextResponse.json({
           success: false,
-          error: 'Nano Banana API request failed',
+          error: 'Google AI Studio API request failed',
           details: {
             status: testResponse.status,
             statusText: testResponse.statusText,
@@ -90,12 +90,12 @@ export async function GET() {
       const testResult = await testResponse.json()
       const generatedText = testResult.candidates?.[0]?.content?.parts?.[0]?.text || 'No response'
 
-      console.log('✅ Nano Banana test successful!')
+      console.log('✅ Google AI Studio test successful!')
       console.log('📝 Generated text:', generatedText)
 
       return NextResponse.json({
         success: true,
-        message: 'Nano Banana (Gemini 2.5 Flash Image) is working correctly!',
+        message: 'Google AI Studio is working correctly!',
         details: {
           apiKeyValid: true,
           model: 'gemini-2.5-flash',
@@ -105,11 +105,11 @@ export async function GET() {
       })
 
     } catch (apiError) {
-      console.error('❌ Nano Banana API call failed:', apiError)
+      console.error('❌ Google AI Studio API call failed:', apiError)
       
       return NextResponse.json({
         success: false,
-        error: 'Nano Banana API call failed',
+        error: 'Google AI Studio API call failed',
         details: {
           keyValid: true,
           apiCallFailed: true,
@@ -136,14 +136,14 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log('🧪 Testing Nano Banana with image analysis...')
+    console.log('🧪 Testing Google AI Studio with image analysis...')
     
     const nanoBananaKey = process.env.GOOGLE_AI_API_KEY || process.env.NANO_BANANA_API_KEY
     
     if (!nanoBananaKey) {
       return NextResponse.json({
         success: false,
-        error: 'Nano Banana API key not found'
+        error: 'Google AI Studio API key not found'
       }, { status: 500 })
     }
 
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Nano Banana image analysis completed!',
+      message: 'Google AI Studio image analysis completed!',
       result: {
         confidence: result.confidence,
         processingTime: result.processingTime,

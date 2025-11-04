@@ -142,7 +142,7 @@ export default function HomePage() {
               {
                 icon: Brain,
                 title: "Visualisation IA 3D",
-                description: "Transformez vos photos en rendus 3D photoréalistes avec Nano Banana (Gemini 2.5 Flash Image)",
+                description: "Transformez vos photos en rendus 3D photoréalistes avec Google AI Studio",
                 image: "/modern-luxury-kitchen-renovation.jpg",
               },
               {
@@ -211,7 +211,7 @@ export default function HomePage() {
                   {
                     icon: Brain,
                     title: "IA Avancée",
-                    description: "Nano Banana (Gemini 2.5 Flash Image) pour des visualisations et estimations précises",
+                    description: "Google AI Studio pour des visualisations et estimations précises",
                   },
                   {
                     icon: Shield,

@@ -137,21 +137,21 @@ FORMAT DE RÉPONSE (JSON strict):
 function getFallbackEstimation(selectedRooms: string[], selectedStyle: string) {
   console.log('📊 Using fallback cost estimation')
   
-  // Estimation basique basée sur les pièces
+  // Estimation réaliste basée sur les prix québécois 2024
   const baseCosts = {
-    'cuisine': { min: 25000, max: 65000 },
-    'salle-bain': { min: 15000, max: 45000 },
-    'chambre': { min: 8000, max: 25000 },
-    'salon': { min: 12000, max: 35000 },
-    'bureau': { min: 6000, max: 20000 },
-    'sous-sol': { min: 20000, max: 50000 }
+    'cuisine': { min: 8000, max: 18000 },      // Rénovation partielle à complète
+    'salle-bain': { min: 5000, max: 12000 },   // Salle de bain standard
+    'chambre': { min: 3000, max: 8000 },       // Peinture, plancher, électricité
+    'salon': { min: 4000, max: 10000 },        // Peinture, plancher, éclairage  
+    'bureau': { min: 2500, max: 6000 },        // Espace plus petit
+    'sous-sol': { min: 6000, max: 15000 }      // Finition de sous-sol
   }
 
   let totalMin = 0
   let totalMax = 0
 
   selectedRooms.forEach(room => {
-    const cost = baseCosts[room as keyof typeof baseCosts] || { min: 10000, max: 30000 }
+    const cost = baseCosts[room as keyof typeof baseCosts] || { min: 4000, max: 8000 }
     totalMin += cost.min
     totalMax += cost.max
   })

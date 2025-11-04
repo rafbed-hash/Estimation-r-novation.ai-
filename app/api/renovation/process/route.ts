@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     
     let aiResults
     try {
-      // Utiliser Nano Banana (Gemini 2.5 Flash) pour analyser et transformer les images
+      // Utiliser Google AI Studio pour analyser et transformer les images
       const mainPhoto = body.project.photos?.[0]
       
       if (!mainPhoto) {
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       }
       
     } catch (error) {
-      console.error('❌ Nano Banana failed, using fallback:', error)
+      console.error('❌ Google AI Studio failed, using fallback:', error)
       
       // Log specific error details for debugging
       if (error instanceof Error) {
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         prompt: `Analyse ${body.project.selectedStyle} pour ${body.project.selectedRooms.join(', ')}`
       }
       
-      console.log('⚠️ Using Nano Banana fallback results')
+      console.log('⚠️ Using Google AI Studio fallback results')
     }
     
     // Si tout échoue, utiliser des résultats simulés

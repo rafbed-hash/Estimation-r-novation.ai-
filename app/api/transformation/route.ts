@@ -2,33 +2,173 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Plus de dépendance Replicate - utilisation directe de Google AI Studio
 
-// Fonction pour obtenir l'estimation de coûts via GPT
-async function getCostEstimation(params: any) {
+// Fonction pour analyser l'image transformée avec GPT Vision et calculer les coûts
+async function analyzeTransformedImageAndCalculateCosts(transformedImageUrl: string, originalParams: any) {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/cost-estimation`, {
+    console.log('🔍 Analyse GPT Vision de l\'image transformée...')
+    
+    // Étape 1: Analyser l'image transformée avec GPT Vision
+    const analysisResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/photo-analysis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params)
+      body: JSON.stringify({
+        photoUrl: transformedImageUrl,
+        renovationType: 'room_transformation',
+        roomType: originalParams.selectedRooms[0],
+        style: originalParams.selectedStyle,
+        analysisType: 'transformed_image_costing'
+      })
     })
     
-    if (response.ok) {
-      const result = await response.json()
-      return result.estimation
+    if (!analysisResponse.ok) {
+      throw new Error('Échec analyse GPT Vision')
     }
+    
+    const analysis = await analysisResponse.json()
+    console.log('✅ Analyse GPT Vision terminée:', analysis.analysis)
+    
+    // Étape 2: Calculer les coûts basés sur l'analyse
+    const costCalculation = calculateCostsFromAnalysis(analysis.analysis, originalParams)
+    
+    return {
+      analysis: analysis.analysis,
+      costEstimation: costCalculation,
+      source: 'GPT Vision + Calcul intelligent'
+    }
+    
   } catch (error) {
-    console.error('Erreur estimation coûts:', error)
+    console.error('❌ Erreur analyse intelligente:', error)
+    
+    // Fallback simple
+    return getFallbackEstimation(originalParams)
+  }
+}
+
+// Calculer les coûts basés sur l'analyse GPT Vision
+function calculateCostsFromAnalysis(analysis: any, params: any) {
+  console.log('💰 Calcul des coûts basé sur l\'analyse GPT Vision...')
+  
+  // Extraire les informations de l'analyse
+  const materials = analysis.materials || []
+  const roomAnalysis = analysis.roomAnalysis || {}
+  const complexity = analysis.complexity || 'medium'
+  
+  // Taux horaires québécois 2024
+  const laborRates = {
+    electricien: 85,      // $/heure
+    plombier: 90,         // $/heure
+    menuisier: 65,        // $/heure
+    peintre: 45,          // $/heure
+    carreleur: 70,        // $/heure
+    general: 55           // $/heure
   }
   
-  // Fallback
+  // Estimation du temps selon la complexité et les matériaux
+  let estimatedHours = 0
+  let materialsCost = 0
+  
+  // Calcul basé sur les matériaux détectés
+  materials.forEach((material: string) => {
+    if (material.includes('peinture')) {
+      estimatedHours += 8
+      materialsCost += 500
+    }
+    if (material.includes('carrelage') || material.includes('céramique')) {
+      estimatedHours += 16
+      materialsCost += 2000
+    }
+    if (material.includes('bois') || material.includes('armoire')) {
+      estimatedHours += 20
+      materialsCost += 3000
+    }
+    if (material.includes('électrique') || material.includes('éclairage')) {
+      estimatedHours += 6
+      materialsCost += 800
+    }
+    if (material.includes('plomberie')) {
+      estimatedHours += 12
+      materialsCost += 1500
+    }
+  })
+  
+  // Ajustement selon la complexité
+  const complexityMultiplier = {
+    'low': 0.8,
+    'medium': 1.0,
+    'high': 1.3
+  }
+  
+  estimatedHours *= complexityMultiplier[complexity as keyof typeof complexityMultiplier] || 1.0
+  materialsCost *= complexityMultiplier[complexity as keyof typeof complexityMultiplier] || 1.0
+  
+  // Calcul main d'œuvre (moyenne des taux)
+  const averageLaborRate = 65 // $/heure moyenne
+  const laborCost = estimatedHours * averageLaborRate
+  
+  // Taxes québécoises (TPS + TVQ)
+  const subtotal = materialsCost + laborCost
+  const taxes = subtotal * 0.14975 // 14.975%
+  
+  // Contingence (10%)
+  const contingency = subtotal * 0.10
+  
+  const totalMin = Math.round(subtotal + taxes)
+  const totalMax = Math.round(subtotal + taxes + contingency)
+  
   return {
-    totalMin: 20000,
-    totalMax: 45000,
+    totalMin,
+    totalMax,
     currency: 'CAD',
     breakdown: [
-      { category: 'Matériaux', min: 15000, max: 25000 },
-      { category: 'Main d\'\u0153uvre', min: 18000, max: 28000 },
-      { category: 'Finitions', min: 7000, max: 12000 }
-    ]
+      { 
+        category: 'Matériaux détectés', 
+        min: Math.round(materialsCost), 
+        max: Math.round(materialsCost * 1.2),
+        details: materials.join(', ')
+      },
+      { 
+        category: 'Main d\'œuvre', 
+        min: Math.round(laborCost), 
+        max: Math.round(laborCost * 1.15),
+        details: `${estimatedHours.toFixed(1)}h × ${averageLaborRate}$/h`
+      },
+      { 
+        category: 'Taxes QC (TPS+TVQ)', 
+        min: Math.round(taxes), 
+        max: Math.round(taxes),
+        details: '14.975%'
+      },
+      { 
+        category: 'Contingence', 
+        min: 0, 
+        max: Math.round(contingency),
+        details: '10% sécurité'
+      }
+    ],
+    analysisDetails: {
+      materialsDetected: materials,
+      estimatedHours: estimatedHours.toFixed(1),
+      complexity: complexity,
+      roomDimensions: roomAnalysis.dimensions || 'À mesurer',
+      confidence: analysis.confidence || 75
+    }
+  }
+}
+
+// Fallback simple si l'analyse échoue
+function getFallbackEstimation(params: any) {
+  const roomCount = params.selectedRooms?.length || 1
+  const baseMin = 5000 * roomCount
+  const baseMax = 12000 * roomCount
+  
+  return {
+    totalMin: baseMin,
+    totalMax: baseMax,
+    currency: 'CAD',
+    breakdown: [
+      { category: 'Estimation de base', min: baseMin, max: baseMax, details: 'Calcul simplifié' }
+    ],
+    source: 'Estimation fallback'
   }
 }
 
@@ -155,13 +295,16 @@ export async function POST(request: NextRequest) {
           'Respect des tendances actuelles'
         ]
       },
-      costEstimation: await getCostEstimation({
-        selectedRooms,
-        selectedStyle,
-        transformationGoals,
-        photos,
-        houseInfo: body.houseInfo
-      })
+      costEstimation: await analyzeTransformedImageAndCalculateCosts(
+        transformedImages[0]?.transformed || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800',
+        {
+          selectedRooms,
+          selectedStyle,
+          transformationGoals,
+          photos,
+          houseInfo: body.houseInfo
+        }
+      )
     })
 
   } catch (error) {
