@@ -249,28 +249,26 @@ export function RoomTransformationForm({ data, onUpdate, onNext }: RoomTransform
             const result = await transformationResponse.json()
             console.log('✅ Transformation Google AI réussie:', result)
             
-            // Adapter le résultat pour le composant de résultats
+            // Adapter le résultat pour le composant de résultats (structure attendue)
             const adaptedResults = {
               success: result.success,
-              transformedImages: [{
+              confidence: result.meta?.confidence || 88,
+              model: result.meta?.model || 'Google AI Studio',
+              processingTime: result.meta?.processingTime ? `${result.meta.processingTime}ms` : '2.3s',
+              transformedPhotos: [{
                 id: 1,
+                url: result.apresUrl,
                 original: result.avantUrl,
-                transformed: result.apresUrl,
                 confidence: result.meta?.confidence || 88,
                 room: formData.selectedRooms[0] || 'cuisine',
                 style: formData.selectedStyle,
-                analysis: `Transformation ${formData.selectedStyle} générée par ${result.meta?.model || 'Google AI Studio'}`
+                description: `Transformation ${formData.selectedStyle} générée par ${result.meta?.model || 'Google AI Studio'}`
               }],
-              analysis: {
-                model: result.meta?.model || 'Google AI Studio',
-                confidence: result.meta?.confidence || 88,
-                processingTime: result.meta?.processingTime ? `${result.meta.processingTime}ms` : '2.3s',
-                recommendations: [
-                  `Transformation ${formData.selectedStyle} réussie`,
-                  'Éclairage optimisé par IA',
-                  'Matériaux adaptés au style québécois'
-                ]
-              }
+              recommendations: [
+                `Transformation ${formData.selectedStyle} réussie`,
+                'Éclairage optimisé par IA',
+                'Matériaux adaptés au style québécois'
+              ]
             }
             
             console.log('📦 Résultats adaptés:', adaptedResults)
