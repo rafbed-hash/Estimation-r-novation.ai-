@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { User, Mail, Phone, MapPin } from "lucide-react"
-import { SimpleAddressForm } from './simple-address-form'
+import { GooglePlacesAutocomplete } from './google-places-autocomplete'
 // import { SmartAddressForm } from './smart-address-form'
 // import { GooglePlacesAutocomplete } from './google-places-autocomplete'
 // Utilisation du formulaire simple en attendant la configuration Google Places
@@ -217,20 +217,48 @@ export function ClientInfoForm({ data, onUpdate, onNext }: ClientInfoFormProps) 
           )}
         </div>
 
-        <div className="md:col-span-2">
-          <SimpleAddressForm
-            address={formData.address}
-            city={formData.city}
-            postalCode={formData.postalCode}
-            onAddressChange={(value) => handleInputChange('address', value)}
-            onCityChange={(value) => handleInputChange('city', value)}
-            onPostalCodeChange={(value) => handleInputChange('postalCode', value)}
-            errors={{
-              address: errors.address,
-              city: errors.city,
-              postalCode: errors.postalCode
-            }}
+        <div className="md:col-span-2 space-y-4">
+          <GooglePlacesAutocomplete
+            value={formData.address}
+            onChange={(value) => handleInputChange('address', value)}
+            onPlaceSelected={handlePlaceSelected}
+            error={errors.address}
+            placeholder="Tapez votre adresse et sélectionnez dans la liste"
           />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Ville *</label>
+              <input
+                type="text"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+                className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                  errors.city ? 'border-red-500' : 'border-border'
+                }`}
+                placeholder="Votre ville"
+              />
+              {errors.city && (
+                <p className="text-sm text-red-500">{errors.city}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Code postal *</label>
+              <input
+                type="text"
+                value={formData.postalCode}
+                onChange={(e) => handleInputChange('postalCode', e.target.value.toUpperCase())}
+                className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                  errors.postalCode ? 'border-red-500' : 'border-border'
+                }`}
+                placeholder="H1A 2B3"
+              />
+              {errors.postalCode && (
+                <p className="text-sm text-red-500">{errors.postalCode}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Section budget supprimée selon demande utilisateur */}
