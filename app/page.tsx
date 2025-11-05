@@ -11,21 +11,24 @@ export default function HomePage() {
       {/* Header - Style HomeAdvisor */}
       <header className="bg-white border-b shadow-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div 
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => window.location.href = '/'}
+          >
             <Home className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-900">estimation-rénovation.ai</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#interior" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+            <a href="/renovation" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
               Intérieur
             </a>
-            <a href="#exterior" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+            <a href="/renovation" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
               Extérieur
             </a>
-            <a href="#plus" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+            <a href="/renovation" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
               Plus
             </a>
-            <a href="#articles" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+            <a href="/renovation" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
               Articles & conseils
             </a>
           </nav>
@@ -36,7 +39,10 @@ export default function HomePage() {
             <Button variant="ghost" className="text-gray-600 hover:text-blue-600">
               Français
             </Button>
-            <Button className="bg-red-500 hover:bg-red-600 text-white px-6">
+            <Button 
+              className="bg-red-500 hover:bg-red-600 text-white px-6"
+              onClick={() => window.location.href = '/renovation'}
+            >
               S'inscrire
             </Button>
           </div>
@@ -74,7 +80,10 @@ export default function HomePage() {
                     className="w-24 text-gray-900 placeholder-gray-500 border-none outline-none"
                   />
                 </div>
-                <Button className="bg-red-500 hover:bg-red-600 text-white px-6">
+                <Button 
+                  className="bg-red-500 hover:bg-red-600 text-white px-6"
+                  onClick={() => window.location.href = '/renovation'}
+                >
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -99,7 +108,11 @@ export default function HomePage() {
               { name: "Nettoyage", icon: Sparkles },
               { name: "Béton", icon: Building }
             ].map((service, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2 min-w-[80px] cursor-pointer hover:text-blue-600 transition-colors">
+              <div 
+                key={index} 
+                className="flex flex-col items-center space-y-2 min-w-[80px] cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => window.location.href = '/renovation'}
+              >
                 <div className="w-12 h-12 bg-white rounded-lg shadow-sm flex items-center justify-center border">
                   <service.icon className="h-6 w-6 text-gray-600" />
                 </div>
@@ -153,7 +166,11 @@ export default function HomePage() {
                 badge: "Devis sur mesure"
               }
             ].map((project, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card 
+                key={index} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => window.location.href = '/renovation'}
+              >
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
@@ -215,7 +232,11 @@ export default function HomePage() {
                 badge: "Devis sur mesure"
               }
             ].map((project, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card 
+                key={index} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => window.location.href = '/renovation'}
+              >
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
