@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send } from "lucide-react"
-import { useSearchParams } from 'next/navigation'
 
 // Avoid static prerender for this page due to useSearchParams
 export const dynamic = 'force-dynamic'
@@ -48,15 +47,17 @@ function RenovationPageContent() {
     costEstimation: null
   })
 
-  const searchParams = useSearchParams()
-
   useEffect(() => {
-    const pt = searchParams.get('projectType')
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const pt = params.get('projectType')
     if (pt && !formData.projectType) {
       setFormData(prev => ({ ...prev, projectType: pt }))
       setCurrentStep(2)
     }
-  }, [searchParams, formData.projectType])
+    // We only want to run this on mount or when projectType is null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.projectType])
 
   // Étapes dynamiques selon le type de projet
   const getSteps = () => {
