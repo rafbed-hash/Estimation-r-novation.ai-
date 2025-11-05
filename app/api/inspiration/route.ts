@@ -248,6 +248,8 @@ function generateMockInspiration(roomType: string, style: string, count: number)
     mockPhotos.push({
       id: 1000 + i,
       url: url,
+      title: `${roomType.charAt(0).toUpperCase() + roomType.slice(1)} ${style} #${i + 1}`,
+      description: `Inspiration ${style} pour ${roomType}`,
       src: {
         small: url.replace('w=400&h=300', 'w=200&h=150'),
         medium: url,
