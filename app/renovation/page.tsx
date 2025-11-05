@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -26,7 +26,7 @@ import { PlumbingElectricalForm } from "../../components/renovation/plumbing-ele
 import { HeatPumpForm } from "../../components/renovation/heat-pump-form"
 import { RoomTransformationForm } from "../../components/renovation/room-transformation-form"
 
-export default function RenovationPage() {
+function RenovationPageContent() {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<{
     projectType: string | null,
@@ -324,5 +324,13 @@ export default function RenovationPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function RenovationPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-16 text-center">Chargement…</div>}>
+      <RenovationPageContent />
+    </Suspense>
   )
 }
