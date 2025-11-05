@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
+
+// Avoid static prerender for this page due to useSearchParams
+export const dynamic = 'force-dynamic'
 import {
   ClientInfoForm,
   HouseInfoForm,
