@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Home, ArrowRight, ArrowLeft, Upload, Palette, Calculator, Send } from "lucide-react"
+import { useSearchParams } from 'next/navigation'
 import {
   ClientInfoForm,
   HouseInfoForm,
@@ -43,6 +44,16 @@ export default function RenovationPage() {
     aiResults: null,
     costEstimation: null
   })
+
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const pt = searchParams.get('projectType')
+    if (pt && !formData.projectType) {
+      setFormData(prev => ({ ...prev, projectType: pt }))
+      setCurrentStep(2)
+    }
+  }, [searchParams, formData.projectType])
 
   // Étapes dynamiques selon le type de projet
   const getSteps = () => {

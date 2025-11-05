@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star, Search, MapPin, Home, Wrench, Hammer, Zap, Droplets, Wind, Paintbrush, Building, Snowflake, ArrowRight, Users, Brain, Sparkles, Shield } from "lucide-react"
+import { Star, Search, MapPin, Home, Wrench, Hammer, Zap, Droplets, Wind, Paintbrush, Building, Snowflake, ArrowRight, Users, Brain, Sparkles, Shield, Camera } from "lucide-react"
 
 export default function HomePage() {
   return (
@@ -88,6 +88,17 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
+
+            {/* CTA: Funnel Transformation de piece */}
+            <div>
+              <Button 
+                className="bg-red-500 hover:bg-red-600 text-white px-6"
+                onClick={() => window.location.href = '/renovation?projectType=transformation'}
+              >
+                Transformation de piece
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -106,12 +117,13 @@ export default function HomePage() {
               { name: "Painting", icon: Paintbrush },
               { name: "Heating", icon: Snowflake },
               { name: "Nettoyage", icon: Sparkles },
-              { name: "Béton", icon: Building }
+              { name: "Béton", icon: Building },
+              { name: "Transformation de piece", icon: Camera, href: '/renovation?projectType=transformation' }
             ].map((service, index) => (
               <div 
                 key={index} 
                 className="flex flex-col items-center space-y-2 min-w-[80px] cursor-pointer hover:text-blue-600 transition-colors"
-                onClick={() => window.location.href = '/renovation'}
+                onClick={() => window.location.href = (service as any).href || '/renovation'}
               >
                 <div className="w-12 h-12 bg-white rounded-lg shadow-sm flex items-center justify-center border">
                   <service.icon className="h-6 w-6 text-gray-600" />
