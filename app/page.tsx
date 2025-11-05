@@ -33,94 +33,340 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
+      {/* Hero Section - HomeAdvisor Style */}
+      <section className="relative py-16 lg:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
         <div className="container mx-auto px-4 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <Badge className="bg-primary text-primary-foreground border-primary hover:bg-primary/90">
-                  🍁 Intelligence Artificielle + Expertise Québécoise
-                </Badge>
-                <h1 className="text-4xl lg:text-6xl font-bold text-balance leading-tight">
-                  Visualisez votre <span className="text-primary">rénovation de rêve</span> avec l'IA en 60 secondes
-                </h1>
-                <p className="text-xl text-muted-foreground text-pretty leading-relaxed">
-                  Notre IA génère des visualisations 3D photoréalistes et calcule automatiquement les coûts de rénovation selon le marché québécois 2025. Conforme aux normes du Québec.
-                </p>
-              </div>
+          <div className="text-center space-y-8 max-w-4xl mx-auto">
+            <div className="space-y-4">
+              <Badge className="bg-primary text-primary-foreground border-primary hover:bg-primary/90">
+                🍁 Trouvez des professionnels certifiés au Québec
+              </Badge>
+              <h1 className="text-4xl lg:text-6xl font-bold text-balance leading-tight">
+                Trouvez des <span className="text-primary">professionnels certifiés</span> dans votre région
+              </h1>
+              <p className="text-xl text-muted-foreground text-pretty leading-relaxed max-w-2xl mx-auto">
+                Connectez-vous avec des entrepreneurs qualifiés au Québec. Visualisation IA + estimation précise + professionnels vérifiés.
+              </p>
+            </div>
 
-              <div className="flex justify-center sm:justify-start">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-3xl px-16 py-10 h-auto w-full sm:w-auto" onClick={() => window.location.href = '/renovation'}>
-                  Commencer Mon Projet
-                  <ArrowRight className="ml-4 h-8 w-8" />
+            {/* Search Bar HomeAdvisor Style */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-border max-w-2xl mx-auto">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-center">Quel type de projet avez-vous ?</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {[
+                    { name: "Plomberie", icon: "🔧" },
+                    { name: "Électricité", icon: "⚡" },
+                    { name: "Thermopompe", icon: "🌡️" },
+                    { name: "Cuisine", icon: "🏠" },
+                    { name: "Salle de bain", icon: "🚿" },
+                    { name: "Ventilation", icon: "💨" }
+                  ].map((service) => (
+                    <Button
+                      key={service.name}
+                      variant="outline"
+                      className="h-16 flex-col space-y-1 hover:bg-primary hover:text-primary-foreground"
+                      onClick={() => window.location.href = '/renovation'}
+                    >
+                      <span className="text-2xl">{service.icon}</span>
+                      <span className="text-sm">{service.name}</span>
+                    </Button>
+                  ))}
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={() => window.location.href = '/renovation'}
+                >
+                  Commencer Mon Projet avec l'IA
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
+            </div>
 
-              <div className="flex items-center space-x-8 pt-4">
-                <div className="flex items-center space-x-2">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center"
-                      >
-                        <Users className="h-4 w-4 text-primary" />
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">500+ Clients Satisfaits</p>
-                    <div className="flex items-center">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
-                      ))}
-                      <span className="ml-2 text-sm text-muted-foreground">4.9/5</span>
+            {/* Stats Section */}
+            <div className="flex justify-center items-center space-x-8 pt-8">
+              <div className="flex items-center space-x-2">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-10 h-10 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center"
+                    >
+                      <Users className="h-4 w-4 text-primary" />
                     </div>
+                  ))}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">500+ Clients Satisfaits</p>
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
+                    ))}
+                    <span className="ml-2 text-sm text-muted-foreground">4.9/5</span>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img
-                  src="/luxury-modern-bathroom-renovation-with-marble-tile.jpg"
-                  alt="Rénovation de salle de bain luxueuse"
-                  className="w-full h-[600px] object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
+      {/* Popular Projects Section - HomeAdvisor Style */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold">Projets populaires au Québec</h2>
+            <p className="text-lg text-muted-foreground">Services les plus demandés avec nos professionnels certifiés</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Rénovation Salle de Bain",
+                rating: "4.8",
+                reviews: "1.2k+",
+                price: "à partir de 8 500$",
+                icon: "🚿",
+                popular: true
+              },
+              {
+                name: "Installation Thermopompe",
+                rating: "4.9",
+                reviews: "850+",
+                price: "à partir de 4 500$",
+                icon: "🌡️",
+                popular: true
+              },
+              {
+                name: "Rénovation Cuisine",
+                rating: "4.7",
+                reviews: "2.1k+",
+                price: "à partir de 15 000$",
+                icon: "🏠",
+                popular: false
+              },
+              {
+                name: "Services Plomberie",
+                rating: "4.6",
+                reviews: "3.2k+",
+                price: "à partir de 275$",
+                icon: "🔧",
+                popular: false
+              },
+              {
+                name: "Travaux Électriques",
+                rating: "4.7",
+                reviews: "1.8k+",
+                price: "à partir de 320$",
+                icon: "⚡",
+                popular: false
+              },
+              {
+                name: "Isolation & Ventilation",
+                rating: "4.5",
+                reviews: "650+",
+                price: "à partir de 2 500$",
+                icon: "💨",
+                popular: false
+              }
+            ].map((project, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-border/50 hover:border-primary/20">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">{project.icon}</span>
+                      <div>
+                        <h3 className="font-semibold text-lg">{project.name}</h3>
+                        {project.popular && (
+                          <Badge className="bg-secondary text-secondary-foreground text-xs">Populaire</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 fill-secondary text-secondary" />
+                        <span className="ml-1 font-semibold">{project.rating}</span>
+                      </div>
+                      <span className="text-muted-foreground">({project.reviews} avis)</span>
+                    </div>
+                    
+                    <p className="text-primary font-semibold text-lg">{project.price} CAD</p>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4 hover:bg-primary hover:text-primary-foreground"
+                      onClick={() => window.location.href = '/renovation'}
+                    >
+                      Obtenir une estimation IA
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cost Guides 2025 Section - HomeAdvisor Style */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-12">
+            <Badge className="bg-primary text-primary-foreground border-primary">Guides de Coûts 2025</Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold">Combien coûte votre projet au Québec ?</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Prix actualisés 2025 incluant main-d'œuvre, matériaux et taxes québécoises
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Rénovation Cuisine Complète",
+                minPrice: "15 000",
+                maxPrice: "45 000",
+                avgPrice: "28 000",
+                factors: ["Superficie", "Électroménagers", "Comptoirs", "Armoires"],
+                image: "/modern-luxury-kitchen-renovation.jpg",
+                popular: true
+              },
+              {
+                title: "Rénovation Salle de Bain",
+                minPrice: "8 500",
+                maxPrice: "25 000",
+                avgPrice: "15 500",
+                factors: ["Carrelage", "Plomberie", "Douche/Bain", "Vanité"],
+                image: "/luxury-modern-bathroom-renovation-with-marble-tile.jpg",
+                popular: true
+              },
+              {
+                title: "Installation Thermopompe",
+                minPrice: "4 500",
+                maxPrice: "12 000",
+                avgPrice: "7 500",
+                factors: ["Type", "Superficie", "Installation", "Subventions"],
+                image: "/professional-contractor-team-working-on-luxury-hom.jpg",
+                popular: false
+              },
+              {
+                title: "Travaux Électriques",
+                minPrice: "320",
+                maxPrice: "8 500",
+                avgPrice: "2 400",
+                factors: ["Panneau", "Prises", "Éclairage", "Mise aux normes"],
+                image: "/elegant-living-room-interior-design.jpg",
+                popular: false
+              },
+              {
+                title: "Services Plomberie",
+                minPrice: "275",
+                maxPrice: "6 500",
+                avgPrice: "1 800",
+                factors: ["Urgence", "Réparation", "Installation", "Matériaux"],
+                image: "/luxury-bedroom-renovation.jpg",
+                popular: false
+              },
+              {
+                title: "Isolation & Ventilation",
+                minPrice: "2 500",
+                maxPrice: "15 000",
+                avgPrice: "7 200",
+                factors: ["Superficie", "Type isolation", "Ventilation", "Étanchéité"],
+                image: "/abstract-geometric-shapes.png",
+                popular: false
+              }
+            ].map((guide, index) => (
+              <Card key={index} className="hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20 overflow-hidden">
+                <div className="relative">
+                  <img
+                    src={guide.image}
+                    alt={guide.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  {guide.popular && (
+                    <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
+                      Guide Populaire
+                    </Badge>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-3 left-3 text-white">
+                    <h3 className="font-bold text-lg">{guide.title}</h3>
+                  </div>
+                </div>
+                
+                <CardContent className="p-6 space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Coût moyen :</span>
+                      <span className="text-2xl font-bold text-primary">{guide.avgPrice}$ CAD</span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Min: {guide.minPrice}$</span>
+                      <span className="text-muted-foreground">Max: {guide.maxPrice}$</span>
+                    </div>
+                    
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full" 
+                        style={{ width: `${(parseInt(guide.avgPrice.replace(/\s/g, '')) - parseInt(guide.minPrice.replace(/\s/g, ''))) / (parseInt(guide.maxPrice.replace(/\s/g, '')) - parseInt(guide.minPrice.replace(/\s/g, ''))) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Facteurs de coût :</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {guide.factors.map((factor, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {factor}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                      onClick={() => window.location.href = '/renovation'}
+                    >
+                      Estimation IA Gratuite
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-sm"
+                      onClick={() => window.location.href = '/renovation'}
+                    >
+                      Guide Complet 2025
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-12 text-center space-y-4">
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-border max-w-4xl mx-auto">
+              <h3 className="text-xl font-bold mb-4">💡 Pourquoi nos estimations sont précises ?</h3>
+              <div className="grid md:grid-cols-3 gap-6 text-sm">
+                <div className="space-y-2">
+                  <div className="text-primary font-semibold">🍁 Marché Québécois</div>
+                  <p className="text-muted-foreground">Prix actualisés selon les tarifs 2025 au Québec</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-primary font-semibold">🤖 IA Avancée</div>
+                  <p className="text-muted-foreground">Analyse photo + dimensions pour estimation précise</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-primary font-semibold">📊 Données Réelles</div>
+                  <p className="text-muted-foreground">Basé sur 500+ projets réalisés au Québec</p>
+                </div>
               </div>
-
-              {/* Floating Stats Cards */}
-              <Card className="absolute -bottom-6 -left-6 bg-background/95 backdrop-blur border-border shadow-lg">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Clock className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">60s</p>
-                      <p className="text-sm text-muted-foreground">Estimation IA</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="absolute -top-6 -right-6 bg-background/95 backdrop-blur border-border shadow-lg">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-secondary/10 rounded-lg">
-                      <Shield className="h-5 w-5 text-secondary" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">100%</p>
-                      <p className="text-sm text-muted-foreground">Garantie</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

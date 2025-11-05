@@ -31,9 +31,20 @@ export class GPTVisionService {
     renovationType: string;
     roomType?: string;
     clientLocation?: string;
+    clientData?: {
+      client: { firstName: string; lastName: string; city: string; postalCode: string };
+      house: { propertyType: string; constructionYear: string; surface: string };
+      project: { selectedRooms: string[]; selectedStyle: string; budget?: string };
+    };
+    dimensions?: {
+      length: number;
+      width: number;
+      totalSqFt: number;
+      height?: number;
+    };
   }): Promise<GPTVisionAnalysis> {
     
-    const prompt = this.buildAnalysisPrompt(data.renovationType, data.roomType, data.clientLocation);
+    const prompt = this.buildAnalysisPrompt(data.renovationType, data.roomType, data.clientLocation, data.clientData, data.dimensions);
 
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -89,42 +100,153 @@ export class GPTVisionService {
     }
   }
 
-  private buildAnalysisPrompt(renovationType: string, roomType?: string, location?: string) {
+  private buildAnalysisPrompt(
+    renovationType: string, 
+    roomType?: string, 
+    location?: string,
+    clientData?: {
+      client: { firstName: string; lastName: string; city: string; postalCode: string };
+      house: { propertyType: string; constructionYear: string; surface: string };
+      project: { selectedRooms: string[]; selectedStyle: string; budget?: string };
+    },
+    dimensions?: {
+      length: number;
+      width: number;
+      totalSqFt: number;
+      height?: number;
+    }
+  ) {
     const baseLocation = location || 'Québec, Canada';
     
+    // Construire le contexte client dynamiquement
+    let clientContext = '';
+    if (clientData) {
+      clientContext = `
+CONTEXTE CLIENT:
+- Propriétaire: ${clientData.client.firstName} ${clientData.client.lastName}
+- Localisation: ${clientData.client.city}, QC ${clientData.client.postalCode}
+- Propriété: ${clientData.house.propertyType} (${clientData.house.constructionYear})
+- Surface totale: ${clientData.house.surface} pi²
+- Style désiré: ${clientData.project.selectedStyle}`;
+    }
+
+    // Contexte des dimensions si disponible
+    let dimensionsContext = '';
+    if (dimensions) {
+      dimensionsContext = `
+DIMENSIONS DE LA PIÈCE:
+- Longueur: ${dimensions.length} pieds
+- Largeur: ${dimensions.width} pieds
+- Superficie: ${dimensions.totalSqFt} pi²
+${dimensions.height ? `- Hauteur plafond: ${dimensions.height} pieds` : ''}`;
+    }
+
     const systemPrompts = {
-      plumbing: `Tu es un expert plombier au ${baseLocation}. Analyse cette photo et fournis une estimation détaillée des travaux de plomberie nécessaires.`,
+      transformation: `Tu es un designer d'intérieur expert au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette ${roomType || 'pièce'} de ${dimensions?.totalSqFt || 'taille standard'} pi² et fournis une évaluation complète pour sa transformation en style ${clientData?.project.selectedStyle || 'moderne'}.`,
+
+      plomberie: `Tu es un expert plombier au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo de ${roomType || 'pièce'} et fournis une estimation détaillée des travaux de plomberie nécessaires pour cette propriété spécifique.`,
       
-      electrical: `Tu es un électricien certifié au ${baseLocation}. Analyse cette photo et identifie tous les travaux électriques requis.`,
+      electricite: `Tu es un électricien certifié au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo de ${roomType || 'pièce'} et identifie tous les travaux électriques requis pour cette propriété de ${clientData?.house.constructionYear || 'construction récente'}.`,
       
-      heat_pump: `Tu es un spécialiste en thermopompes au ${baseLocation}. Analyse cette photo pour déterminer la faisabilité d'installation d'une thermopompe.`,
+      thermopompe: `Tu es un spécialiste en thermopompes au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo pour déterminer la faisabilité d'installation d'une thermopompe dans cette ${roomType || 'pièce'} de ${dimensions?.totalSqFt || 'taille standard'} pi².`,
+
+      ventilation: `Tu es un expert en systèmes CVC (Chauffage, Ventilation, Climatisation) au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo pour évaluer les besoins en ventilation et climatisation de cette ${roomType || 'pièce'} de ${dimensions?.totalSqFt || 'taille standard'} pi².`,
+
+      maintenance: `Tu es un expert en maintenance générale résidentielle au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo de ${roomType || 'pièce'} et identifie tous les travaux de maintenance, réparations et entretien nécessaires pour cette propriété.`,
       
-      room_transformation: `Tu es un designer d'intérieur expert au ${baseLocation}. Analyse cette ${roomType || 'pièce'} et fournis une évaluation complète pour sa transformation.`
+      // Fallback pour anciens noms
+      plumbing: `Tu es un expert plombier au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo de ${roomType || 'pièce'} et fournis une estimation détaillée des travaux de plomberie nécessaires pour cette propriété spécifique.`,
+      
+      electrical: `Tu es un électricien certifié au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo de ${roomType || 'pièce'} et identifie tous les travaux électriques requis pour cette propriété de ${clientData?.house.constructionYear || 'construction récente'}.`,
+      
+      heat_pump: `Tu es un spécialiste en thermopompes au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette photo pour déterminer la faisabilité d'installation d'une thermopompe dans cette ${roomType || 'pièce'} de ${dimensions?.totalSqFt || 'taille standard'} pi².`,
+      
+      room_transformation: `Tu es un designer d'intérieur expert au ${baseLocation}. ${clientContext}${dimensionsContext}
+
+Analyse cette ${roomType || 'pièce'} de ${dimensions?.totalSqFt || 'taille standard'} pi² et fournis une évaluation complète pour sa transformation en style ${clientData?.project.selectedStyle || 'moderne'}.`
     };
 
     const userPrompt = `
-Analyse cette photo et fournis une réponse JSON structurée avec:
+ANALYSE VISUELLE DÉTAILLÉE - RECONNAISSANCE DES MATÉRIAUX
 
+Analyse cette photo de ${roomType || 'pièce'}${dimensions ? ` de ${dimensions.totalSqFt} pi²` : ''} comme un expert en reconnaissance visuelle des matériaux de construction et de décoration.
+
+MISSION SPÉCIALE - IDENTIFICATION PRÉCISE:
+🔍 Identifie CHAQUE matériau visible comme Google Lens identifie des objets
+🏗️ Analyse les finitions, textures, couleurs, marques si visibles
+📏 Estime les quantités et dimensions des matériaux
+💡 Détecte les changements/rénovations déjà effectués
+
+CONTEXTE TECHNIQUE:
+${dimensions ? `- Superficie exacte: ${dimensions.totalSqFt} pi² (${dimensions.length}' × ${dimensions.width}')` : '- Estime la superficie en pi²'}
+${clientData ? `- Style désiré: ${clientData.project.selectedStyle}` : ''}
+${clientData ? `- Année construction: ${clientData.house.constructionYear}` : ''}
+- Localisation: ${baseLocation}
+- Prix marché québécois 2024
+
+FORMAT JSON REQUIS - RECONNAISSANCE MATÉRIAUX:
 {
-  "materials": ["liste des matériaux nécessaires"],
-  "scope": ["liste des travaux à effectuer"],
+  "detectedMaterials": [
+    {
+      "material": "nom exact du matériau",
+      "brand": "marque si identifiable",
+      "color": "couleur précise",
+      "texture": "texture observée",
+      "location": "où dans la pièce",
+      "condition": "état actuel",
+      "estimatedAge": "âge estimé",
+      "quantity": "quantité estimée",
+      "confidence": 90
+    }
+  ],
+  "existingRenovations": [
+    {
+      "area": "zone rénovée",
+      "workType": "type de travaux fait",
+      "materialsUsed": ["matériaux utilisés"],
+      "quality": "qualité du travail",
+      "estimatedDate": "période estimée"
+    }
+  ],
+  "materials": ["liste complète matériaux identifiés"],
+  "scope": ["travaux nécessaires pour ${dimensions?.totalSqFt || 'X'} pi²"],
   "complexity": "low|medium|high",
-  "recommendations": ["recommandations spécifiques"],
+  "recommendations": ["recommandations basées sur matériaux existants"],
   "confidence": 85,
   "estimatedCost": {
-    "min": 15000,
-    "max": 35000,
+    "min": ${dimensions ? Math.round(dimensions.totalSqFt * 150) : 15000},
+    "max": ${dimensions ? Math.round(dimensions.totalSqFt * 300) : 35000},
     "currency": "CAD"
   },
   "roomAnalysis": {
-    "type": "type de pièce détecté",
-    "dimensions": "estimation des dimensions",
-    "condition": "état actuel",
-    "features": ["caractéristiques notables"]
+    "type": "${roomType || 'pièce détectée'}",
+    "dimensions": "${dimensions ? `${dimensions.length}' × ${dimensions.width}' (${dimensions.totalSqFt} pi²)` : 'à mesurer'}",
+    "condition": "état actuel observé",
+    "features": ["caractéristiques spécifiques détectées"],
+    "dominantMaterials": ["matériaux principaux"],
+    "colorPalette": ["couleurs dominantes"]
   }
 }
 
-Utilise les prix du marché québécois 2024. Sois précis et réaliste.
+SOIS ULTRA-PRÉCIS COMME GOOGLE LENS - Identifie marques, modèles, finitions exactes !
 `;
 
     return {
