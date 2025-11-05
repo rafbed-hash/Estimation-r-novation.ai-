@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleAIStudioService } from '@/lib/services/google-ai-studio'
+import { GeminiImageService } from '@/lib/services/gemini-image-service'
 import { OpenAICostEstimationService } from '@/lib/services/openai-cost-estimation'
 
 export async function POST(request: NextRequest) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       console.log('⚠️ Missing OpenAI key - will use fallback cost estimation')
     }
 
-    const googleAI = googleAIKey ? new GoogleAIStudioService(googleAIKey) : null
+    const geminiService = googleAIKey ? new GeminiImageService(googleAIKey) : null
     const openAI = openAIKey ? new OpenAICostEstimationService(openAIKey) : null
 
     // Étape 1: Transformation d'images avec Google AI Studio (Gemini)
@@ -64,18 +64,28 @@ export async function POST(request: NextRequest) {
       
       let transformationResult
       
-      if (googleAI) {
-        transformationResult = await googleAI.transformImage({
-          originalPhoto: mainPhoto,
+      if (geminiService) {
+        transformationResult = await geminiService.transformRoomImage({
+          baseImages: [mainPhoto],
           roomType: firstRoom,
-          selectedStyle: body.project.selectedStyle,
+          style: body.project.selectedStyle,
+          dimensions: {
+            length: 12,
+            width: 10,
+            totalSqFt: 120
+          },
+          clientData: {
+            client: body.client,
+            house: body.house,
+            project: body.project
+          },
           customPrompt: body.project.customPrompt,
-          inspirationPhoto: body.project.inspirationPhoto
+          inspirationImage: body.project.inspirationPhoto
         })
         
-        console.log('✅ Google AI analysis completed')
+        console.log('✅ Gemini analysis completed')
         console.log('📊 Analysis confidence:', transformationResult.confidence)
-        console.log('📝 Analysis description:', transformationResult.description.substring(0, 100) + '...')
+        console.log('⏱️ Processing time:', transformationResult.processingTime + 'ms')
       } else {
         // Résultats simulés si pas de clé API
         transformationResult = {
@@ -92,8 +102,8 @@ export async function POST(request: NextRequest) {
         originalPhotos: [mainPhoto],
         transformedPhotos: [{
           id: '1',
-          url: transformationResult.transformedPhoto,
-          description: transformationResult.description,
+          url: 'transformedImage' in transformationResult ? transformationResult.transformedImage : transformationResult.transformedPhoto,
+          description: 'description' in transformationResult ? transformationResult.description : `Transformation ${body.project.selectedStyle}`,
           confidence: transformationResult.confidence
         }],
         confidence: transformationResult.confidence,
